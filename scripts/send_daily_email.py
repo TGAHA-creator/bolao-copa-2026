@@ -81,7 +81,8 @@ def load_context():
 
 
 def call_model(context):
-    api_key = env("ANTHROPIC_API_KEY", required=True)
+    raw_key = env("ANTHROPIC_API_KEY", required=True)
+    api_key = raw_key.strip()  # tolerate stray whitespace/newline from a pasted secret
     model = env("ANTHROPIC_MODEL", "claude-sonnet-4-5")
     max_uses = int(env("WEB_SEARCH_MAX_USES", "15"))
     today = datetime.date.today().isoformat()
@@ -148,6 +149,17 @@ def call_model(context):
             data = json.load(resp)
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", "replace")
+        if e.code == 401:
+            if api_key.startswith("sk-ant-api"):
+                cls = "standard-api-key(sk-ant-api...)"
+            elif api_key.startswith("sk-ant-oat"):
+                cls = "oauth-token(sk-ant-oat...) -- needs Authorization: Bearer, NOT x-api-key"
+            elif not api_key:
+                cls = "EMPTY"
+            else:
+                cls = "unrecognized-prefix(not sk-ant-...)"
+            print(f"DIAG 401: key_len={len(api_key)} class={cls} "
+                  f"had_surrounding_whitespace={raw_key != api_key}", file=sys.stderr)
         sys.exit(f"ERROR: Anthropic API HTTP {e.code}: {body[:1000]}")
 
     # Concatenate all final text blocks (web_search_tool_result / server_tool_use blocks are skipped).
