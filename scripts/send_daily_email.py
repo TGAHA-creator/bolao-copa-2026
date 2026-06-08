@@ -90,7 +90,7 @@ def call_model(context):
     # Default scope = tomorrow's matches in Asia/Dubai (predict the day before kickoff, exactly once).
     # WINDOW_HOURS is an optional preview override (manual dispatch) that switches to an N-hour window.
     window_hours = env("WINDOW_HOURS", "").strip()
-    gst_now = datetime.datetime.utcnow() + datetime.timedelta(hours=4)
+    gst_now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=4)
     tomorrow_gst = (gst_now.date() + datetime.timedelta(days=1)).isoformat()
     if window_hours and window_hours != "0":
         scope_instr = (
@@ -192,6 +192,14 @@ def call_model(context):
                 break
         except urllib.error.HTTPError as e:
             body = e.read().decode("utf-8", "replace")
+            if e.code in (429, 500, 502, 503, 529):  # transient: rate limit / overload — retry
+                retry_after = e.headers.get("retry-after")
+                delay = int(retry_after) if (retry_after and retry_after.isdigit()) else 20 * (attempt + 1)
+                last_err = f"HTTP {e.code}: {body[:200]}"
+                print(f"WARN: model call attempt {attempt + 1}/3 got HTTP {e.code}; "
+                      f"retrying in {delay}s...", file=sys.stderr)
+                time.sleep(delay)
+                continue
             if e.code == 401:
                 if api_key.startswith("sk-ant-api"):
                     cls = "standard-api-key(sk-ant-api...)"
@@ -203,7 +211,7 @@ def call_model(context):
                     cls = "unrecognized-prefix(not sk-ant-...)"
                 print(f"DIAG 401: key_len={len(api_key)} class={cls} "
                       f"had_surrounding_whitespace={raw_key != api_key}", file=sys.stderr)
-            sys.exit(f"ERROR: Anthropic API HTTP {e.code}: {body[:1000]}")  # 4xx: don't retry
+            sys.exit(f"ERROR: Anthropic API HTTP {e.code}: {body[:1000]}")  # other 4xx: don't retry
         except (urllib.error.URLError, OSError, RuntimeError) as e:
             last_err = e
             print(f"WARN: model call attempt {attempt + 1}/3 failed "
