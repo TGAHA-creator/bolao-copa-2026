@@ -7,9 +7,9 @@ on:
   workflow_dispatch:        # lets you trigger a test run manually from the Actions tab
     inputs:
       window_hours:
-        description: "Hours ahead to scope matches (daily default 36). Use a larger value to preview an upcoming match day."
+        description: "Optional preview override: hours ahead to scope matches. Leave blank for normal mode (predict tomorrow's matches)."
         required: false
-        default: "36"
+        default: ""
 
 # Avoid overlapping runs if a previous one is still going.
 concurrency:
@@ -44,8 +44,8 @@ jobs:
           EMAIL_TO: ${{ vars.EMAIL_TO || 'tiagogsa@yahoo.com.br' }}
           EMAIL_FROM: ${{ vars.EMAIL_FROM }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-6' }}
-          # Scope window (hours ahead). Daily cron uses 36; a manual dispatch can widen it to preview a future match day.
-          WINDOW_HOURS: ${{ inputs.window_hours || vars.WINDOW_HOURS || '36' }}
+          # Blank = normal mode (predict tomorrow's Asia/Dubai matches). Set a number via manual dispatch to preview an N-hour window.
+          WINDOW_HOURS: ${{ inputs.window_hours || vars.WINDOW_HOURS || '' }}
         run: python scripts/send_daily_email.py
 
       - name: Persist predictions + log, and keepalive (dodges 60-day cron auto-disable)
