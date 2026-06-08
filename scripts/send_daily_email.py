@@ -86,8 +86,25 @@ def call_model(context):
     api_key = raw_key.strip()  # tolerate stray whitespace/newline from a pasted secret
     model = env("ANTHROPIC_MODEL", "claude-sonnet-4-5")
     max_uses = int(env("WEB_SEARCH_MAX_USES", "15"))
-    window_hours = env("WINDOW_HOURS", "36")
     today = datetime.date.today().isoformat()
+    # Default scope = tomorrow's matches in Asia/Dubai (predict the day before kickoff, exactly once).
+    # WINDOW_HOURS is an optional preview override (manual dispatch) that switches to an N-hour window.
+    window_hours = env("WINDOW_HOURS", "").strip()
+    gst_now = datetime.datetime.utcnow() + datetime.timedelta(hours=4)
+    tomorrow_gst = (gst_now.date() + datetime.timedelta(days=1)).isoformat()
+    if window_hours and window_hours != "0":
+        scope_instr = (
+            f"SCOPE for STEP 2 (preview override): include every FIFA World Cup 2026 match kicking off within "
+            f"the next {window_hours} hours from now (Asia/Dubai). Produce full STEP 3 predictions for all of "
+            f"them; do not return an empty 'no games' email if matches fall in this window."
+        )
+    else:
+        scope_instr = (
+            f"SCOPE for STEP 2: predict EVERY FIFA World Cup 2026 match whose kickoff falls on the Asia/Dubai "
+            f"calendar day {tomorrow_gst} (that is tomorrow). Do NOT predict matches on any other day. If there "
+            f"are no matches on {tomorrow_gst}, return the single-line 'Nenhum jogo na janela' email and write "
+            f"no predictions file."
+        )
 
     system = (
         "You are the automated daily assistant for the FIFA World Cup 2026 betting pool "
@@ -124,10 +141,7 @@ def call_model(context):
     )
     user = (
         f"Today's date: {today} (treat kickoff times in Asia/Dubai, UTC+4).\n\n"
-        f"SCOPE WINDOW for STEP 2: include every match kicking off within the next {window_hours} hours "
-        f"from now (this overrides the 24-36h figure in the spec for this run). If matches exist in this "
-        f"window, you MUST produce full predictions for them per STEP 3 — do not return an empty 'no games' "
-        f"email when matches fall inside the window.\n\n"
+        f"{scope_instr}\n\n"
         f"=== CONTEXT (routine spec + data + log + prior predictions) ===\n\n{context}\n\n"
         "=== TASK ===\nDo STEP 1 (grade) through STEP 5 (compose email) now, then return the JSON."
     )
