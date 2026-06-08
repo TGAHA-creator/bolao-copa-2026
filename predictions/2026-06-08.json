@@ -1,0 +1,52 @@
+[
+  {
+    "match": "México vs África do Sul",
+    "kickoff_gst": "2026-06-11 23:00",
+    "venue": "Estadio Azteca, Cidade do México (altitude ~2.250m)",
+    "outcome": "Empate",
+    "score": "1-1",
+    "p_model": {
+      "A": 0.624,
+      "draw": 0.225,
+      "B": 0.151
+    },
+    "p_consensus": {
+      "A": 0.637,
+      "draw": 0.218,
+      "B": 0.145
+    },
+    "xg": {
+      "A": 1.8,
+      "B": 0.75
+    },
+    "base_pts": 7,
+    "est_total_pts": 11,
+    "edge": "Modelo 23% vs consenso 22% no empate; EV empate 1,57 supera EV vitória México 1,25 e vitória SA 1,36. Pequena edge positiva no empate.",
+    "notes": "Jogo de abertura oficial da Copa; Azteca altitude 2.250m favorece México; Malagon ausente (LCA); México em série de 7 sem perder; SA defensiva mas tem altitude para superar."
+  },
+  {
+    "match": "Coreia do Sul vs República Tcheca",
+    "kickoff_gst": "2026-06-12 06:00",
+    "venue": "Estadio Akron, Guadalajara (altitude ~1.560m)",
+    "outcome": "A",
+    "score": "1-0",
+    "p_model": {
+      "A": 0.38,
+      "draw": 0.291,
+      "B": 0.329
+    },
+    "p_consensus": {
+      "A": 0.356,
+      "draw": 0.336,
+      "B": 0.308
+    },
+    "xg": {
+      "A": 1.15,
+      "B": 1.05
+    },
+    "base_pts": 5,
+    "est_total_pts": 9,
+    "edge": "Modelo 38% vs consenso 36% para Coreia; EV coreano 1,90 lidera. Empate EVITADO: modelo 29% está bem abaixo dos 34% do consenso — sem value no empate.",
+    "notes": "Jogo pelo 2º lugar no Grupo A (atrás do México); Coreia invicta nas eliminatórias (40 gols, 8 sofridos); Son Heung-min e Kim Min-jae ativos de elite; Tcheca chegou via playoff mas em forma (5 vitórias consecutivas)."
+  }
+]
