@@ -11,7 +11,7 @@ concurrency:
   group: daily-bolao-email
   cancel-in-progress: false
 
-# Needed so the keepalive step can push a commit.
+# Needed so the persistence step can push commits (predictions, log, keepalive).
 permissions:
   contents: write
 
@@ -29,24 +29,26 @@ jobs:
 
       - name: Generate and send the daily email
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          # Optional overrides (set as repo Variables, not Secrets, if you want):
-          SMTP_HOST: ${{ vars.SMTP_HOST || 'smtp.mail.yahoo.com' }}
+          # Secrets are stored under custom names in this repo; map them to what the script expects.
+          ANTHROPIC_API_KEY: ${{ secrets.SECRET_BOLAO }}
+          SMTP_USER: ${{ secrets.SECRET_BOLAO_EMAIL }}
+          SMTP_PASS: ${{ secrets.SECRET_BOLAO_EMAIL_PW }}
+          # Config (repo Variables, with sane defaults). NOTE: correct recipient spelling.
+          SMTP_HOST: ${{ vars.SMTP_HOST || 'smtp.gmail.com' }}
           SMTP_PORT: ${{ vars.SMTP_PORT || '465' }}
-          EMAIL_TO: ${{ vars.EMAIL_TO || 'tiagosa@yahoo.com.br' }}
+          EMAIL_TO: ${{ vars.EMAIL_TO || 'tiagogsa@yahoo.com.br' }}
           EMAIL_FROM: ${{ vars.EMAIL_FROM }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-6' }}
         run: python scripts/send_daily_email.py
 
-      - name: Keepalive commit (dodges GitHub's 60-day auto-disable of cron)
+      - name: Persist predictions + log, and keepalive (dodges 60-day cron auto-disable)
         if: always()
         run: |
           mkdir -p .github
           date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/last-run.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A predictions log.md .github/last-run.txt 2>/dev/null || true
           git add .github/last-run.txt
-          git commit -m "chore: keepalive [skip ci]" || { echo "nothing to commit"; exit 0; }
+          git commit -m "chore: daily picks + log + keepalive [skip ci]" || { echo "nothing to commit"; exit 0; }
           git push
