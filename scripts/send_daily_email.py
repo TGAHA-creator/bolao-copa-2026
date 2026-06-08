@@ -30,6 +30,7 @@ import os
 import smtplib
 import ssl
 import sys
+import time
 import urllib.request
 import urllib.error
 from email.message import EmailMessage
@@ -133,44 +134,70 @@ def call_model(context):
 
     payload = {
         "model": model,
-        "max_tokens": 16000,
+        "max_tokens": 32000,
         "system": system,
         "tools": [{"type": "web_search_20260209", "name": "web_search", "max_uses": max_uses}],
         "messages": [{"role": "user", "content": user}],
+        "stream": True,  # stream so long web-search runs don't drop the connection (RemoteDisconnected)
+    }
+    headers = {
+        "content-type": "application/json",
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01",
     }
 
-    req = urllib.request.Request(
-        API_URL,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "content-type": "application/json",
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-        },
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=600) as resp:
-            data = json.load(resp)
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", "replace")
-        if e.code == 401:
-            if api_key.startswith("sk-ant-api"):
-                cls = "standard-api-key(sk-ant-api...)"
-            elif api_key.startswith("sk-ant-oat"):
-                cls = "oauth-token(sk-ant-oat...) -- needs Authorization: Bearer, NOT x-api-key"
-            elif not api_key:
-                cls = "EMPTY"
-            else:
-                cls = "unrecognized-prefix(not sk-ant-...)"
-            print(f"DIAG 401: key_len={len(api_key)} class={cls} "
-                  f"had_surrounding_whitespace={raw_key != api_key}", file=sys.stderr)
-        sys.exit(f"ERROR: Anthropic API HTTP {e.code}: {body[:1000]}")
+    def stream_once():
+        """One streamed attempt; returns the concatenated text-delta output."""
+        req = urllib.request.Request(API_URL, data=json.dumps(payload).encode("utf-8"),
+                                     headers=headers, method="POST")
+        parts = []
+        with urllib.request.urlopen(req, timeout=300) as resp:  # 300s = per-read idle cap; stream stays warm
+            for raw in resp:
+                line = raw.decode("utf-8", "replace").strip()
+                if not line.startswith("data:"):
+                    continue
+                chunk = line[5:].strip()
+                if chunk == "[DONE]":
+                    break
+                try:
+                    ev = json.loads(chunk)
+                except json.JSONDecodeError:
+                    continue
+                et = ev.get("type")
+                if et == "content_block_delta" and ev.get("delta", {}).get("type") == "text_delta":
+                    parts.append(ev["delta"].get("text", ""))
+                elif et == "error":
+                    raise RuntimeError(f"stream error: {ev.get('error')}")
+        return "".join(parts).strip()
 
-    # Concatenate all final text blocks (web_search_tool_result / server_tool_use blocks are skipped).
-    text = "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text").strip()
+    text, last_err = "", None
+    for attempt in range(3):
+        try:
+            text = stream_once()
+            if text:
+                break
+        except urllib.error.HTTPError as e:
+            body = e.read().decode("utf-8", "replace")
+            if e.code == 401:
+                if api_key.startswith("sk-ant-api"):
+                    cls = "standard-api-key(sk-ant-api...)"
+                elif api_key.startswith("sk-ant-oat"):
+                    cls = "oauth-token(sk-ant-oat...) -- needs Authorization: Bearer, NOT x-api-key"
+                elif not api_key:
+                    cls = "EMPTY"
+                else:
+                    cls = "unrecognized-prefix(not sk-ant-...)"
+                print(f"DIAG 401: key_len={len(api_key)} class={cls} "
+                      f"had_surrounding_whitespace={raw_key != api_key}", file=sys.stderr)
+            sys.exit(f"ERROR: Anthropic API HTTP {e.code}: {body[:1000]}")  # 4xx: don't retry
+        except (urllib.error.URLError, OSError, RuntimeError) as e:
+            last_err = e
+            print(f"WARN: model call attempt {attempt + 1}/3 failed "
+                  f"({type(e).__name__}: {e}); retrying...", file=sys.stderr)
+            time.sleep(5 * (attempt + 1))
+
     if not text:
-        sys.exit(f"ERROR: model returned no text. stop_reason={data.get('stop_reason')} raw={json.dumps(data)[:800]}")
+        sys.exit(f"ERROR: model returned no text after retries. last_err={last_err}")
 
     start, end = text.find("{"), text.rfind("}")
     if start == -1 or end == -1:
