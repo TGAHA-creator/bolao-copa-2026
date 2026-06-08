@@ -4,7 +4,12 @@ on:
   schedule:
     # GitHub cron runs in UTC. 09:05 Asia/Dubai (UTC+4) = 05:05 UTC.
     - cron: "5 5 * * *"   # 09:05 Asia/Dubai (UTC+4)
-  workflow_dispatch: {}     # lets you trigger a test run manually from the Actions tab
+  workflow_dispatch:        # lets you trigger a test run manually from the Actions tab
+    inputs:
+      window_hours:
+        description: "Hours ahead to scope matches (daily default 36). Use a larger value to preview an upcoming match day."
+        required: false
+        default: "36"
 
 # Avoid overlapping runs if a previous one is still going.
 concurrency:
@@ -39,6 +44,8 @@ jobs:
           EMAIL_TO: ${{ vars.EMAIL_TO || 'tiagogsa@yahoo.com.br' }}
           EMAIL_FROM: ${{ vars.EMAIL_FROM }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-6' }}
+          # Scope window (hours ahead). Daily cron uses 36; a manual dispatch can widen it to preview a future match day.
+          WINDOW_HOURS: ${{ inputs.window_hours || vars.WINDOW_HOURS || '36' }}
         run: python scripts/send_daily_email.py
 
       - name: Persist predictions + log, and keepalive (dodges 60-day cron auto-disable)
