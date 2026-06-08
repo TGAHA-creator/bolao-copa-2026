@@ -40,9 +40,9 @@ Add these three secrets:
 
 | Secret name         | Value                                  |
 |---------------------|----------------------------------------|
-| `ANTHROPIC_API_KEY` | your Anthropic API key                 |
-| `SMTP_USER`         | the full sending address (e.g. `you@yahoo.com.br`) |
-| `SMTP_PASS`         | the app password from step 1           |
+| `sk-ant-api03-d5z...AwAA` | your Anthropic API key                 |
+| `tiagogsa@gmail.com`         | the full sending address (e.g. `you@yahoo.com.br`) |
+| `kbir eiib xoja bhhv`         | the app password from step 1           |
 
 Optional **Variables** (same screen, "Variables" tab) if you want to override
 defaults: `SMTP_HOST`, `SMTP_PORT`, `EMAIL_TO`, `EMAIL_FROM`, `ANTHROPIC_MODEL`.
