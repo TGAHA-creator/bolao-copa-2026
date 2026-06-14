@@ -8,6 +8,7 @@ Pipeline per the routine spec (bolao-copa-2026-routine.md, the single source of 
   STEP 3 PREDICT- web-search rankings/Elo/form/injuries/odds; EV-optimal picks.
   STEP 4 LOG    - write predictions/<date>.json and the updated log.md (committed by the workflow).
   STEP 5 EMAIL  - send the pt-BR email via SMTP.
+  STEP 6 INGEST - POST the analysis (dashboard contract) to the Bolao Dashboard (this fork).
 
 The model is given the Anthropic web_search server tool so STEPS 1-3 use live data.
 Standard library only - no pip install required.
@@ -18,10 +19,13 @@ Env (mapped from repo secrets in the workflow):
   SMTP_PASS           - Gmail app password (NOT the login password)
 Optional (defaults shown):
   SMTP_HOST=smtp.gmail.com  SMTP_PORT=465  EMAIL_TO=tiagogsa@yahoo.com.br
-  EMAIL_FROM=<SMTP_USER>     ANTHROPIC_MODEL=claude-sonnet-4-5
+  EMAIL_FROM=<SMTP_USER>     ANTHROPIC_MODEL=claude-sonnet-4-6
   ROUTINE_FILE=bolao-copa-2026-routine.md   DATA_DIR=data
   PREDICTIONS_DIR=predictions               LOG_FILE=log.md
   WEB_SEARCH_MAX_USES=15
+Dashboard ingest (optional - skipped if unset):
+  INGEST_URL          - e.g. https://your-app.vercel.app/api/ingest
+  INGEST_SECRET       - the dashboard's INGEST_SECRET (sent as Authorization: Bearer)
 """
 
 import datetime
@@ -37,6 +41,13 @@ from email.message import EmailMessage
 from pathlib import Path
 
 API_URL = "https://api.anthropic.com/v1/messages"
+
+# Asia/Dubai (GST) is UTC+4 with no DST.
+GST = datetime.timezone(datetime.timedelta(hours=4))
+
+# Confidence thresholds applied to the picked outcome's (de-vigged) probability.
+CONF_HIGH = 0.55
+CONF_MEDIUM = 0.40
 
 
 def env(name, default=None, required=False):
@@ -84,7 +95,7 @@ def load_context():
 def call_model(context):
     raw_key = env("ANTHROPIC_API_KEY", required=True)
     api_key = raw_key.strip()  # tolerate stray whitespace/newline from a pasted secret
-    model = env("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+    model = env("ANTHROPIC_MODEL", "claude-sonnet-4-6")
     max_uses = int(env("WEB_SEARCH_MAX_USES", "15"))
     today = datetime.date.today().isoformat()
     # Default scope = tomorrow's matches in Asia/Dubai (predict the day before kickoff, exactly once).
@@ -124,20 +135,38 @@ def call_model(context):
         '  "body_text": "plain-text pt-BR email",\n'
         '  "body_html": "clean simple HTML pt-BR email",\n'
         '  "had_matches": true,\n'
+        '  "matchday": "stage label, e.g. \\"Group Stage - Matchday 2\\" or \\"Round of 16\\"",\n'
+        '  "summary": "one or two sentence pt-BR overview of the day",\n'
         '  "predictions": [\n'
-        '    {"match":"TIME A vs TIME B","kickoff_gst":"YYYY-MM-DD HH:MM","venue":"...",\n'
+        '    {"match":"TIME A vs TIME B","competition":"ex.: Grupo G ou Oitavas",\n'
+        '     "kickoff_gst":"YYYY-MM-DD HH:MM","venue":"...",\n'
         '     "outcome":"A|Empate|B","score":"X-Y",\n'
         '     "p_model":{"A":0.0,"draw":0.0,"B":0.0},\n'
         '     "p_consensus":{"A":0.0,"draw":0.0,"B":0.0},\n'
         '     "xg":{"A":0.0,"B":0.0},"base_pts":0,"est_total_pts":0,\n'
-        '     "edge":"...","notes":"..."}\n'
+        '     "alt_scores":[{"score":"X-Y","prob":0.0}],\n'
+        '     "key_factors":["fator 1","fator 2","fator 3"],\n'
+        '     "edge":"...","reading":"...","notes":"..."}\n'
         "  ],\n"
+        '  "research": [{"title":"short label","notes":"1-2 sentence research note"}],\n'
+        '  "grading": {"date":"YYYY-MM-DD","results":[{"match":"...","predicted":"X-Y",'
+        '"actual":"X-Y","pointsEarned":0,"note":"..."}],"totalPoints":0,"lessons":"..."},\n'
+        '  "standings": {"totalSeasonPoints":0,"rank":"—"},\n'
         '  "log_md": "the FULL updated contents of log.md: a LESSONS list (max 10 bullets) at the '
         "top, then the running graded history with today's newly graded matches appended. Preserve "
         'all prior entries."\n'
         "}\n"
-        "If had_matches is false, predictions is [] but still return log_md (updated if you graded "
-        "anything, otherwise unchanged)."
+        "The matchday, summary, per-match competition, research, grading and standings fields power a "
+        "web dashboard, so keep them consistent with the email: 'grading' mirrors the matches you "
+        "graded in STEP 1 (use null if you graded nothing); 'standings.totalSeasonPoints' is the running "
+        "cumulative points AFTER applying today's grading. "
+        "All probabilities (p_model, p_consensus, alt_scores.prob) are fractions in [0,1]; each p_model "
+        "and p_consensus triple sums to ~1.0. alt_scores lists 2-3 other likely scorelines with their "
+        "probability; key_factors is 3-4 short Brazilian-Portuguese factors; reading and edge are in "
+        "Brazilian Portuguese. These per-match fields (model vs market, xg, alt_scores, key_factors, "
+        "reading, edge) power the web dashboard cards, so fill them for every match. "
+        "If had_matches is false, predictions is [] but still return log_md, grading and standings "
+        "(updated if you graded anything, otherwise unchanged)."
     )
     user = (
         f"Today's date: {today} (treat kickoff times in Asia/Dubai, UTC+4).\n\n"
@@ -252,6 +281,199 @@ def persist(result):
     return written
 
 
+# --------------------------- dashboard ingest ----------------------------
+
+def gst_to_utc_iso(kickoff_gst):
+    """'YYYY-MM-DD HH:MM' (Asia/Dubai) -> '...T..:..:00Z' (UTC). None on failure."""
+    if not kickoff_gst:
+        return None
+    s = str(kickoff_gst).strip().replace("T", " ")
+    try:
+        dt = datetime.datetime.strptime(s, "%Y-%m-%d %H:%M").replace(tzinfo=GST)
+    except ValueError:
+        return None
+    return dt.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _confidence(pred):
+    """High/Medium/Low from the strongest (de-vigged) outcome probability."""
+    probs = pred.get("p_consensus") or pred.get("p_model") or {}
+    vals = [v for v in probs.values() if isinstance(v, (int, float))]
+    pmax = max(vals) if vals else 0.0
+    if pmax >= CONF_HIGH:
+        return "High"
+    if pmax >= CONF_MEDIUM:
+        return "Medium"
+    return "Low"
+
+
+def _rationale(pred):
+    edge = (pred.get("edge") or "").strip()
+    notes = (pred.get("notes") or "").strip()
+    if edge and notes:
+        return f"{edge} — {notes}"
+    return edge or notes
+
+
+def _int(value, default=0):
+    try:
+        return int(round(float(value)))
+    except (TypeError, ValueError):
+        return default
+
+
+def _float(value, default=0.0):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _triple(d):
+    """Map a model {A,draw,B} probability triple to {home,draw,away}."""
+    if not isinstance(d, dict):
+        return None
+    return {
+        "home": _float(d.get("A", d.get("home"))),
+        "draw": _float(d.get("draw", d.get("Empate"))),
+        "away": _float(d.get("B", d.get("away"))),
+    }
+
+
+def _outcome(value):
+    """Model 'A|Empate|B' -> contract 'home|draw|away'."""
+    return {
+        "A": "home", "B": "away",
+        "Empate": "draw", "empate": "draw", "Draw": "draw", "draw": "draw",
+    }.get(str(value or "").strip())
+
+
+def build_analysis(result, today):
+    """Map the model's strict-JSON output to the dashboard /api/ingest contract."""
+    out_preds = []
+    for p in (result.get("predictions") or []):
+        ep = p.get("est_total_pts")
+        pred = {
+            "match": p.get("match", ""),
+            "competition": (p.get("competition") or "Fase de Grupos"),
+            "kickoff": gst_to_utc_iso(p.get("kickoff_gst")) or "",
+            "venue": p.get("venue", ""),
+            "predictedScore": p.get("score", ""),
+            "confidence": _confidence(p),
+            "bolaoPoints": (f"~{_int(ep)}" if ep is not None else ""),
+            "rationale": _rationale(p),
+            "edge": p.get("edge", ""),
+            "reading": p.get("reading", ""),
+            "keyFactors": [
+                f for f in (p.get("key_factors") or [])
+                if isinstance(f, str) and f.strip()
+            ],
+        }
+        outcome = _outcome(p.get("outcome"))
+        if outcome:
+            pred["outcome"] = outcome
+        if p.get("base_pts") is not None:
+            pred["basePoints"] = _int(p.get("base_pts"))
+        if ep is not None:
+            pred["estPoints"] = _float(ep)
+        pm = _triple(p.get("p_model"))
+        if pm:
+            pred["pModel"] = pm
+        pc = _triple(p.get("p_consensus"))
+        if pc:
+            pred["pConsensus"] = pc
+        xg = p.get("xg")
+        if isinstance(xg, dict):
+            pred["xg"] = {
+                "home": _float(xg.get("A", xg.get("home"))),
+                "away": _float(xg.get("B", xg.get("away"))),
+            }
+        alts = [
+            {"score": str(a.get("score")), "prob": _float(a.get("prob"))}
+            for a in (p.get("alt_scores") or [])
+            if isinstance(a, dict) and a.get("score")
+        ]
+        if alts:
+            pred["altScores"] = alts
+        out_preds.append(pred)
+
+    # Date the analysis to the actual match day (earliest kickoff), not the run date.
+    kickoffs = [pr["kickoff"] for pr in out_preds if pr.get("kickoff")]
+    match_date = min(kickoffs)[:10] if kickoffs else today
+
+    grading = result.get("grading")
+    if isinstance(grading, dict) and grading:
+        grading = {
+            "date": grading.get("date", ""),
+            "results": [
+                {
+                    "match": r.get("match", ""),
+                    "predicted": r.get("predicted", ""),
+                    "actual": r.get("actual", ""),
+                    "pointsEarned": _int(r.get("pointsEarned")),
+                    "note": r.get("note", ""),
+                }
+                for r in (grading.get("results") or [])
+            ],
+            "totalPoints": _int(grading.get("totalPoints")),
+            "lessons": grading.get("lessons", ""),
+        }
+    else:
+        grading = None
+
+    standings = result.get("standings") or {}
+
+    return {
+        "date": match_date,
+        "matchday": result.get("matchday", ""),
+        "summary": result.get("summary", ""),
+        "predictions": out_preds,
+        "research": [
+            {"title": r.get("title", ""), "notes": r.get("notes", "")}
+            for r in (result.get("research") or [])
+            if r.get("title")
+        ],
+        "grading": grading,
+        "standings": {
+            "totalSeasonPoints": _int(standings.get("totalSeasonPoints")),
+            "rank": str(standings.get("rank", "—") or "—"),
+        },
+    }
+
+
+def post_to_dashboard(payload):
+    """POST the analysis to the dashboard. Non-fatal: warns and returns on failure."""
+    url = (env("INGEST_URL", "") or "").strip()
+    secret = (env("INGEST_SECRET", "") or "").strip()
+    if not url or not secret:
+        print("INGEST_URL/INGEST_SECRET not set — skipping dashboard POST.", file=sys.stderr)
+        return
+
+    data = json.dumps(payload).encode("utf-8")
+    headers = {"content-type": "application/json", "authorization": f"Bearer {secret}"}
+
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                body = resp.read().decode("utf-8", "replace")
+                print(f"Dashboard ingest OK: HTTP {resp.status} {body[:200]}")
+                return
+        except urllib.error.HTTPError as e:
+            body = e.read().decode("utf-8", "replace")
+            if e.code in (429, 500, 502, 503, 504) and attempt < 2:
+                time.sleep(3 * (attempt + 1))
+                continue
+            print(f"WARN: dashboard ingest failed HTTP {e.code}: {body[:300]}", file=sys.stderr)
+            return
+        except (urllib.error.URLError, OSError) as e:
+            if attempt < 2:
+                time.sleep(3 * (attempt + 1))
+                continue
+            print(f"WARN: dashboard ingest error: {type(e).__name__}: {e}", file=sys.stderr)
+            return
+
+
 def send(subject, body_text, body_html=None):
     smtp_user = env("SMTP_USER", required=True)
     smtp_pass = env("SMTP_PASS", required=True)
@@ -293,6 +515,14 @@ def main():
         print("Wrote: " + ", ".join(written))
     else:
         print("No prediction/log files to write this run.")
+
+    # POST to the dashboard before the email so a slow/broken email never blocks
+    # ingest — and so a broken ingest never blocks the email (both are non-fatal).
+    try:
+        analysis = build_analysis(result, datetime.date.today().isoformat())
+        post_to_dashboard(analysis)
+    except Exception as e:  # never let dashboard issues abort the run
+        print(f"WARN: could not build/post dashboard payload: {type(e).__name__}: {e}", file=sys.stderr)
 
     recipient = send(
         result.get("subject", "Bolao Copa 2026"),

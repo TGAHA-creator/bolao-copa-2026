@@ -46,6 +46,9 @@ jobs:
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-6' }}
           # Blank = normal mode (predict tomorrow's Asia/Dubai matches). Set a number via manual dispatch to preview an N-hour window.
           WINDOW_HOURS: ${{ inputs.window_hours || vars.WINDOW_HOURS || '' }}
+          # Dashboard ingest — POST the daily analysis to the Bolão Dashboard (skipped if either is unset).
+          INGEST_URL: ${{ vars.INGEST_URL }}
+          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
         run: python scripts/send_daily_email.py
 
       - name: Persist predictions + log, and keepalive (dodges 60-day cron auto-disable)
