@@ -129,44 +129,50 @@ def call_model(context):
         "Polymarket prices, de-vigged into consensus probabilities. If there are no matches in the "
         "window, the email body is the single line 'Nenhum jogo na janela'. State any assumption you "
         "must make; never invent rule details.\n\n"
-        "Respond with STRICT JSON ONLY (no prose, no code fences), exactly this shape:\n"
+        "Respond with STRICT JSON ONLY (no prose, no code fences), exactly this shape. The email "
+        "fields (subject/body_text/body_html) stay Brazilian Portuguese. The DASHBOARD text fields are "
+        'BILINGUAL objects {"pt":"...","en":"..."} — provide BOTH Brazilian Portuguese and English with '
+        "the SAME meaning:\n"
         "{\n"
         '  "subject": "Bolao Copa 2026 - palpites para <data> (<n> jogos)",\n'
         '  "body_text": "plain-text pt-BR email",\n'
         '  "body_html": "clean simple HTML pt-BR email",\n'
         '  "had_matches": true,\n'
-        '  "matchday": "stage label, e.g. \\"Group Stage - Matchday 2\\" or \\"Round of 16\\"",\n'
-        '  "summary": "one or two sentence pt-BR overview of the day",\n'
+        '  "matchday": {"pt":"ex.: Fase de Grupos - Rodada 2","en":"e.g. Group Stage - Matchday 2"},\n'
+        '  "summary": {"pt":"resumo do dia (1-2 frases)","en":"day overview (1-2 sentences)"},\n'
         '  "predictions": [\n'
-        '    {"match":"TIME A vs TIME B","competition":"ex.: Grupo G ou Oitavas",\n'
+        '    {"match":"TIME A vs TIME B",\n'
+        '     "competition":{"pt":"ex.: Grupo G","en":"e.g. Group G"},\n'
         '     "kickoff_gst":"YYYY-MM-DD HH:MM","venue":"...",\n'
         '     "outcome":"A|Empate|B","score":"X-Y",\n'
         '     "p_model":{"A":0.0,"draw":0.0,"B":0.0},\n'
         '     "p_consensus":{"A":0.0,"draw":0.0,"B":0.0},\n'
         '     "xg":{"A":0.0,"B":0.0},"base_pts":0,"est_total_pts":0,\n'
         '     "alt_scores":[{"score":"X-Y","prob":0.0}],\n'
-        '     "key_factors":["fator 1","fator 2","fator 3"],\n'
-        '     "edge":"...","reading":"...","notes":"..."}\n'
+        '     "key_factors":[{"pt":"fator","en":"factor"}],\n'
+        '     "edge":{"pt":"...","en":"..."},"reading":{"pt":"...","en":"..."},\n'
+        '     "notes":{"pt":"...","en":"..."}}\n'
         "  ],\n"
-        '  "research": [{"title":"short label","notes":"1-2 sentence research note"}],\n'
+        '  "research": [{"title":{"pt":"","en":""},"notes":{"pt":"","en":""}}],\n'
         '  "grading": {"date":"YYYY-MM-DD","results":[{"match":"...","predicted":"X-Y",'
-        '"actual":"X-Y","pointsEarned":0,"note":"..."}],"totalPoints":0,"lessons":"..."},\n'
-        '  "standings": {"totalSeasonPoints":0,"rank":"—"},\n'
+        '"actual":"X-Y","pointsEarned":0,"note":{"pt":"","en":""}}],"totalPoints":0,'
+        '"lessons":{"pt":"","en":""}},\n'
+        '  "standings": {"totalSeasonPoints":0,"rank":"—","totalCorrect":0,"totalExact":0},\n'
         '  "log_md": "the FULL updated contents of log.md: a LESSONS list (max 10 bullets) at the '
         "top, then the running graded history with today's newly graded matches appended. Preserve "
         'all prior entries."\n'
         "}\n"
-        "The matchday, summary, per-match competition, research, grading and standings fields power a "
-        "web dashboard, so keep them consistent with the email: 'grading' mirrors the matches you "
-        "graded in STEP 1 (use null if you graded nothing); 'standings.totalSeasonPoints' is the running "
-        "cumulative points AFTER applying today's grading. "
-        "All probabilities (p_model, p_consensus, alt_scores.prob) are fractions in [0,1]; each p_model "
-        "and p_consensus triple sums to ~1.0. alt_scores lists 2-3 other likely scorelines with their "
-        "probability; key_factors is 3-4 short Brazilian-Portuguese factors; reading and edge are in "
-        "Brazilian Portuguese. These per-match fields (model vs market, xg, alt_scores, key_factors, "
-        "reading, edge) power the web dashboard cards, so fill them for every match. "
-        "If had_matches is false, predictions is [] but still return log_md, grading and standings "
-        "(updated if you graded anything, otherwise unchanged)."
+        "Fill the dashboard text fields for every match in BOTH languages. The Portuguese ('pt') text "
+        "must be NATURAL Brazilian Portuguese with NO English jargon (use 'cotacoes' not 'odds', 'sem a "
+        "margem' not 'de-vig', 'mais de 2,5 gols' not 'Over 2.5', 'no resultado' not '1X2'); the English "
+        "('en') natural English. research 'title' must be short and descriptive of what the note covers "
+        "(e.g. pt 'Como chegam: Franca x Senegal'), never just 'Forma X/Y'. 'grading' mirrors STEP 1 "
+        "(null if nothing graded); 'standings.totalSeasonPoints' is the running cumulative points after "
+        "today's grading, 'totalCorrect' the cumulative count of correct results (right winner or draw) "
+        "and 'totalExact' the cumulative count of exact scores, across all graded days. "
+        "All probabilities are fractions in [0,1]; each p_model/p_consensus triple sums to ~1.0. "
+        "alt_scores lists 2-3 other likely scorelines. "
+        "If had_matches is false, predictions is [] but still return log_md, grading and standings."
     )
     user = (
         f"Today's date: {today} (treat kickoff times in Asia/Dubai, UTC+4).\n\n"
@@ -284,15 +290,20 @@ def persist(result):
 # --------------------------- dashboard ingest ----------------------------
 
 def gst_to_utc_iso(kickoff_gst):
-    """'YYYY-MM-DD HH:MM' (Asia/Dubai) -> '...T..:..:00Z' (UTC). None on failure."""
+    """Asia/Dubai kickoff string -> '...T..:..:00Z' (UTC). Tolerant of several
+    shapes (with/without seconds, 'T' or space, trailing Z/offset). None if
+    unparseable — the dashboard contract allows an empty kickoff."""
     if not kickoff_gst:
         return None
     s = str(kickoff_gst).strip().replace("T", " ")
-    try:
-        dt = datetime.datetime.strptime(s, "%Y-%m-%d %H:%M").replace(tzinfo=GST)
-    except ValueError:
-        return None
-    return dt.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    s = s.split("+")[0].split("Z")[0].strip()  # drop any trailing offset/Z
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d %H"):
+        try:
+            dt = datetime.datetime.strptime(s, fmt).replace(tzinfo=GST)
+            return dt.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        except ValueError:
+            continue
+    return None
 
 
 def _confidence(pred):
@@ -348,6 +359,24 @@ def _outcome(value):
     }.get(str(value or "").strip())
 
 
+def _load_standings_override():
+    """Optional user-maintained standings.json at the repo root. Any field present here
+    wins over the model's self-graded standings, because the model can only grade when the
+    GitHub history is reachable — whereas the bolao app's real numbers are always authoritative.
+    Keep just the fields you want to pin (typically rank + totalSeasonPoints from the app);
+    omitted fields fall back to the model's computed values.
+    """
+    path = Path(env("STANDINGS_FILE", "standings.json"))
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (ValueError, OSError) as e:
+        print(f"WARN: could not read {path}: {e}", file=sys.stderr)
+        return {}
+
+
 def build_analysis(result, today):
     """Map the model's strict-JSON output to the dashboard /api/ingest contract."""
     out_preds = []
@@ -355,18 +384,19 @@ def build_analysis(result, today):
         ep = p.get("est_total_pts")
         pred = {
             "match": p.get("match", ""),
-            "competition": (p.get("competition") or "Fase de Grupos"),
+            "competition": (p.get("competition") or {"pt": "Fase de Grupos", "en": "Group Stage"}),
             "kickoff": gst_to_utc_iso(p.get("kickoff_gst")) or "",
             "venue": p.get("venue", ""),
             "predictedScore": p.get("score", ""),
             "confidence": _confidence(p),
             "bolaoPoints": (f"~{_int(ep)}" if ep is not None else ""),
-            "rationale": _rationale(p),
+            "rationale": p.get("notes", ""),
             "edge": p.get("edge", ""),
             "reading": p.get("reading", ""),
             "keyFactors": [
                 f for f in (p.get("key_factors") or [])
-                if isinstance(f, str) and f.strip()
+                if (isinstance(f, dict) and (f.get("pt") or f.get("en")))
+                or (isinstance(f, str) and f.strip())
             ],
         }
         outcome = _outcome(p.get("outcome"))
@@ -421,7 +451,14 @@ def build_analysis(result, today):
     else:
         grading = None
 
-    standings = result.get("standings") or {}
+    # The model self-grades cumulative standings, but grading only runs when the GitHub
+    # history is reachable. A user-maintained standings.json (the real numbers from the
+    # bolao app) overrides per-field when present, so the dashboard always shows the true
+    # league position even when auto-grading is unavailable.
+    standings = dict(result.get("standings") or {})
+    for key, value in _load_standings_override().items():
+        if value is not None and key in {"totalSeasonPoints", "rank", "totalCorrect", "totalExact"}:
+            standings[key] = value
 
     return {
         "date": match_date,
@@ -437,6 +474,8 @@ def build_analysis(result, today):
         "standings": {
             "totalSeasonPoints": _int(standings.get("totalSeasonPoints")),
             "rank": str(standings.get("rank", "—") or "—"),
+            "totalCorrect": _int(standings.get("totalCorrect")),
+            "totalExact": _int(standings.get("totalExact")),
         },
     }
 

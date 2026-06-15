@@ -1,0 +1,8 @@
+{
+  "_comment": "Edit this file after each matchday with your numbers from the Marquinha Copa 2026 app. The daily pipeline reads it and pins these onto the dashboard's standings, overriding the model's self-graded values. You normally only touch 'rank' and 'totalSeasonPoints'. 'totalCorrect'/'totalExact' are the model's record (right result / exact score) across the matches it predicted; leave them for me to recompute, or update if you track them yourself. 'asOf' is just a note and is ignored by the pipeline.",
+  "rank": "1º",
+  "totalSeasonPoints": 60,
+  "totalCorrect": 5,
+  "totalExact": 2,
+  "asOf": "2026-06-15"
+}
