@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolão Copa 2026 · Marquinha</title>
+<style>
+  :root {
+    --bg: #0f1a14;
+    --card: #162117;
+    --card2: #1c2b1e;
+    --border: #2a3d2c;
+    --gold: #e0a020;
+    --gold2: #f5c842;
+    --green: #22c55e;
+    --teal: #14b8a6;
+    --red: #ef4444;
+    --text: #e8f0e9;
+    --muted: #7a9e7e;
+    --rank1: #f5c842;
+    --rank2: #cbd5e1;
+    --rank3: #cd7f32;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+
+  /* HEADER */
+  header { background: linear-gradient(135deg, #0a120c 0%, #162117 60%, #1a2e1c 100%); border-bottom: 2px solid var(--gold); padding: 20px 16px 16px; text-align: center; }
+  header .trophy { font-size: 2.2rem; margin-bottom: 4px; }
+  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 0.04em; color: var(--gold); text-transform: uppercase; }
+  header .subtitle { font-size: 0.78rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .badge-container { display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+  .badge { background: #1e3320; border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 0.72rem; color: var(--muted); }
+  .badge.live { border-color: var(--green); color: var(--green); }
+
+  /* LEADER CARD */
+  .leader-card { background: linear-gradient(135deg, #1a2e1c, #1e3a20); border: 2px solid var(--gold); border-radius: 12px; margin: 14px; padding: 16px; display: flex; align-items: center; gap: 14px; }
+  .leader-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.4rem; color: #0a120c; flex-shrink: 0; }
+  .leader-info { flex: 1; }
+  .leader-label { font-size: 0.68rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+  .leader-name { font-size: 1.15rem; font-weight: 800; color: var(--text); }
+  .leader-pts { text-align: right; }
+  .leader-pts .pts-num { font-size: 2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+  .leader-pts .pts-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; }
+  .leader-gap { background: #0f1a14; border: 1px solid var(--green); border-radius: 6px; padding: 4px 10px; margin-top: 6px; font-size: 0.75rem; color: var(--green); font-weight: 700; display: inline-block; }
+
+  /* SECTION HEADER */
+  .section-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px 6px; border-top: 1px solid var(--border); margin-top: 8px; }
+  .section-header h2 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 700; }
+  .section-header .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+
+  /* STANDINGS TABLE */
+  .standings { margin: 0 10px 10px; }
+  .standings-row { display: flex; align-items: center; gap: 10px; padding: 10px 10px; border-radius: 8px; margin-bottom: 3px; background: var(--card); border: 1px solid var(--border); transition: background 0.15s; }
+  .standings-row:hover { background: var(--card2); }
+  .standings-row.you { background: linear-gradient(90deg, #1a2e1c, #162117); border-color: var(--gold); }
+  .standings-row.div2 { opacity: 0.75; }
+  .rank-num { width: 24px; text-align: center; font-weight: 800; font-size: 0.95rem; flex-shrink: 0; }
+  .rank-num.gold { color: var(--rank1); }
+  .rank-num.silver { color: var(--rank2); }
+  .rank-num.bronze { color: var(--rank3); }
+  .rank-num.normal { color: var(--muted); }
+  .player-info { flex: 1; min-width: 0; }
+  .player-name { font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .you-tag { display: inline-block; background: var(--gold); color: #0a120c; font-size: 0.58rem; font-weight: 800; border-radius: 4px; padding: 1px 5px; margin-left: 5px; text-transform: uppercase; vertical-align: middle; }
+  .pts-bar-wrap { width: 80px; flex-shrink: 0; }
+  .pts-bar { height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; }
+  .pts-bar-fill { height: 100%; border-radius: 2px; background: var(--gold); }
+  .pts-val { font-size: 0.88rem; font-weight: 800; color: var(--text); text-align: right; width: 36px; flex-shrink: 0; }
+  .div-separator { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 6px 4px 3px; }
+
+  /* PREDICTIONS */
+  .predictions { margin: 0 10px 10px; }
+  .match-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+  .match-header { background: #1e3320; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .match-group { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .match-time { font-size: 0.68rem; color: var(--teal); }
+  .match-teams { padding: 10px 12px 4px; display: flex; align-items: center; justify-content: space-between; }
+  .team-name { font-weight: 700; font-size: 0.92rem; max-width: 110px; }
+  .score-box { background: #0f1a14; border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; text-align: center; }
+  .score-val { font-size: 1.6rem; font-weight: 900; color: var(--gold); letter-spacing: 0.04em; line-height: 1; }
+  .score-label { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+  .match-footer { padding: 8px 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .factor-tag { background: #1e3320; border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; font-size: 0.65rem; color: var(--muted); }
+  .pts-est { background: #1a2e1c; border: 1px solid var(--gold); border-radius: 4px; padding: 2px 7px; font-size: 0.65rem; color: var(--gold); font-weight: 700; }
+  .edge-box { margin: 0 12px 8px; background: #0d1e0f; border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 6px 10px; font-size: 0.72rem; color: #a0c8a4; line-height: 1.4; }
+
+  /* STATS ROW */
+  .stats-row { display: flex; gap: 8px; margin: 0 10px 10px; }
+  .stat-card { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 10px; text-align: center; }
+  .stat-val { font-size: 1.5rem; font-weight: 900; color: var(--gold); }
+  .stat-label { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; margin-top: 2px; letter-spacing: 0.06em; }
+
+  /* INFO BOX */
+  .info-box { margin: 0 10px 10px; background: #0d1e10; border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
+  .info-box a { color: var(--teal); }
+
+  /* WEIGHT EXPLAINER */
+  .weight-row { display: flex; gap: 8px; margin: 0 10px 14px; }
+  .weight-card { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px; text-align: center; }
+  .weight-card.final { border-color: var(--gold); }
+  .weight-card .phase { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; }
+  .weight-card .games { font-size: 0.82rem; font-weight: 700; color: var(--text); margin: 2px 0; }
+  .weight-card .mult { font-size: 1.1rem; font-weight: 900; color: var(--muted); }
+  .weight-card.final .mult { color: var(--gold); }
+
+  /* UPDATE INFO */
+  .update-bar { background: #1a2e1c; border-top: 1px solid var(--border); padding: 8px 14px; font-size: 0.68rem; color: var(--muted); text-align: center; }
+  .update-bar span { color: var(--teal); }
+
+  /* LOADING STATE */
+  .loading { text-align: center; padding: 20px; color: var(--muted); font-size: 0.8rem; }
+
+  /* RESPONSIVE */
+  @media (min-width: 480px) {
+    .leader-card { margin: 14px auto; max-width: 480px; }
+    .standings, .predictions, .stats-row, .weight-row, .info-box { max-width: 480px; margin-left: auto; margin-right: auto; }
+    header { padding: 24px 16px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="trophy">🏆</div>
+  <h1>Bolão Copa 2026</h1>
+  <p class="subtitle">Marquinha Copa 2026 · Dubai Strategy Engine</p>
+  <div class="badge-container">
+    <span class="badge live">⚡ Live</span>
+    <span class="badge">12 participantes</span>
+    <span class="badge">Final 19 Jul · MetLife</span>
+  </div>
+</header>
+
+<!-- LEADER CARD -->
+<div class="leader-card">
+  <div class="leader-avatar">T</div>
+  <div class="leader-info">
+    <div class="leader-label">🥇 Líder · 1ª Divisão</div>
+    <div class="leader-name">Tiago Assis</div>
+    <div><span class="leader-gap">↑ +28 pts sobre o 2º</span></div>
+  </div>
+  <div class="leader-pts">
+    <div class="pts-num" id="leader-pts">169</div>
+    <div class="pts-label">pontos</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="section-header"><div class="dot"></div><h2>Situação da Estratégia</h2></div>
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-val">28</div><div class="stat-label">Vantagem (pts)</div></div>
+  <div class="stat-card"><div class="stat-val">#1</div><div class="stat-label">Posição</div></div>
+  <div class="stat-card"><div class="stat-val" id="days-left">—</div><div class="stat-label">Dias p/ Final</div></div>
+</div>
+
+<!-- STANDINGS -->
+<div class="section-header"><div class="dot"></div><h2>Classificação Geral</h2></div>
+<div class="standings" id="standings-list">
+  <!-- populated by JS or static fallback below -->
+</div>
+
+<!-- PESO DOS JOGOS -->
+<div class="section-header"><div class="dot"></div><h2>Sistema de Peso</h2></div>
+<div class="weight-row">
+  <div class="weight-card"><div class="phase">Fase Grupos</div><div class="games">72 jogos</div><div class="mult">1×</div></div>
+  <div class="weight-card"><div class="phase">Mata-Mata</div><div class="games">31 jogos</div><div class="mult">1×</div></div>
+  <div class="weight-card final"><div class="phase">A Final</div><div class="games">1 jogo</div><div class="mult">2×</div></div>
+</div>
+
+<!-- LATEST PREDICTIONS -->
+<div class="section-header"><div class="dot"></div><h2>Último Palpite Enviado</h2></div>
+<div class="predictions" id="predictions-list">
+  <div class="loading">Carregando palpites...</div>
+</div>
+
+<!-- INFO -->
+<div class="info-box">
+  <strong style="color:var(--text)">Como funciona a estratégia?</strong><br>
+  Todos os dias, um motor de análise (Poisson + Dixon-Coles + odds de-vig bet365/Kalshi) gera os palpites otimizados para maximizar pontos no bolão. O foco é sempre no <em>placar exato</em> (+5 bônus) e na diferenciação do 2º colocado. A Final em 19 de Julho vale pontos em dobro.<br><br>
+  <a href="https://github.com/TGAHA-creator/bolao-copa-2026">Ver repositório e log</a>
+</div>
+
+<div class="update-bar">Atualizado em <span id="last-update">—</span> · Dados: Marquinha Copa 2026</div>
+
+<script>
+// ── Static standings (updated from Marquinha app screenshots, 22 Jun 2026) ────
+const STANDINGS = [
+  { rank: 1,  name: "Tiago Assis",               pts: 169, you: true,  div: 1 },
+  { rank: 2,  name: "Bruno Rosa",                 pts: 141, you: false, div: 1 },
+  { rank: 3,  name: "Rafael M de A Couto",        pts: 140, you: false, div: 1 },
+  { rank: 4,  name: "Rodrigo",                    pts: 131, you: false, div: 1 },
+  { rank: 5,  name: "Julio Costa",                pts: 125, you: false, div: 1 },
+  { rank: 6,  name: "Bruno Reis",                 pts: 120, you: false, div: 1 },
+  { rank: 7,  name: "Tio",                        pts: 119, you: false, div: 2 },
+  { rank: 8,  name: "Marcus Melo",                pts: 113, you: false, div: 2 },
+  { rank: 9,  name: "Lucca Rosa",                 pts: 108, you: false, div: 2 },
+  { rank: 10, name: "Alcides B. dos Santos Júnior", pts: 108, you: false, div: 2 },
+  { rank: 11, name: "Alexandre",                  pts: 96,  you: false, div: 2 },
+  { rank: 12, name: "Francisco Lizardo",          pts: 76,  you: false, div: 2 },
+];
+
+const maxPts = STANDINGS[0].pts;
+
+function rankColor(r) {
+  if (r === 1) return 'gold';
+  if (r === 2) return 'silver';
+  if (r === 3) return 'bronze';
+  return 'normal';
+}
+
+function buildStandings() {
+  const el = document.getElementById('standings-list');
+  let html = '';
+  let lastDiv = 1;
+
+  STANDINGS.forEach(p => {
+    if (p.div === 2 && lastDiv === 1) {
+      html += `<div class="div-separator">2ª Divisão</div>`;
+      lastDiv = 2;
+    }
+    const barPct = Math.round((p.pts / maxPts) * 100);
+    html += `
+      <div class="standings-row${p.you ? ' you' : ''}${p.div === 2 ? ' div2' : ''}">
+        <div class="rank-num ${rankColor(p.rank)}">${p.rank}</div>
+        <div class="player-info">
+          <div class="player-name">${p.name}${p.you ? '<span class="you-tag">você</span>' : ''}</div>
+        </div>
+        <div class="pts-bar-wrap">
+          <div class="pts-bar"><div class="pts-bar-fill" style="width:${barPct}%"></div></div>
+        </div>
+        <div class="pts-val">${p.pts}</div>
+      </div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+// ── Days until final (July 19 2026) ─────────────────────────────────────────
+function updateDaysLeft() {
+  const final = new Date('2026-07-19T18:00:00Z'); // ~2PM ET kickoff
+  const now = new Date();
+  const days = Math.max(0, Math.ceil((final - now) / 86400000));
+  document.getElementById('days-left').textContent = days;
+}
+
+// ── Fetch latest predictions from repo ──────────────────────────────────────
+async function loadPredictions() {
+  const BASE = 'https://raw.githubusercontent.com/TGAHA-creator/bolao-copa-2026/main/predictions/';
+  const el = document.getElementById('predictions-list');
+
+  // Try the last few dates
+  const dates = [];
+  for (let i = 0; i <= 5; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().slice(0, 10));
+  }
+
+  let loaded = false;
+  for (const date of dates) {
+    try {
+      const r = await fetch(BASE + date + '.json');
+      if (!r.ok) continue;
+      const preds = await r.json();
+      if (!Array.isArray(preds) || preds.length === 0) continue;
+
+      let html = '';
+      preds.forEach(p => {
+        const score = p.score || '— - —';
+        const [home, away] = score.split('-').map(s => s.trim());
+        const match = p.match || '';
+        const [teamA, teamB] = match.split(' vs ').map(s => (s || '').trim());
+        const factors = (p.key_factors || []).slice(0, 3).map(f => {
+          const txt = typeof f === 'string' ? f : (f.pt || f.en || '');
+          return `<span class="factor-tag">${txt}</span>`;
+        }).join('');
+        const edge = typeof (p.edge) === 'string' ? p.edge : (p.edge?.pt || p.edge?.en || '');
+        const est = p.est_total_pts ? `<span class="pts-est">~${Math.round(p.est_total_pts)} pts</span>` : '';
+        const venue = p.venue ? `· ${p.venue}` : '';
+        const group = (typeof p.competition === 'object' ? (p.competition.pt || p.competition.en || '') : (p.competition || ''));
+
+        html += `
+          <div class="match-card">
+            <div class="match-header">
+              <span class="match-group">${group}</span>
+              <span class="match-time">${(p.kickoff_gst || '').slice(11, 16)} Dubai ${venue}</span>
+            </div>
+            <div class="match-teams">
+              <div class="team-name">${teamA || '—'}</div>
+              <div class="score-box">
+                <div class="score-val">${home || '—'} – ${away || '—'}</div>
+                <div class="score-label">palpite</div>
+              </div>
+              <div class="team-name" style="text-align:right">${teamB || '—'}</div>
+            </div>
+            ${edge ? `<div class="edge-box">↳ ${edge}</div>` : ''}
+            <div class="match-footer">${factors}${est}</div>
+          </div>`;
+      });
+
+      el.innerHTML = `<div style="font-size:0.7rem;color:var(--muted);padding:0 4px 6px">Palpites para ${date}</div>` + html;
+      document.getElementById('last-update').textContent = date + ' (palpites)';
+      loaded = true;
+      break;
+    } catch(e) { /* try next */ }
+  }
+
+  if (!loaded) {
+    el.innerHTML = `<div class="info-box">Palpites do dia aparecerão aqui depois do envio diário (9:08h Dubai). Verifique amanhã!</div>`;
+    document.getElementById('last-update').textContent = '22 Jun 2026 (classificação)';
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+buildStandings();
+updateDaysLeft();
+loadPredictions();
+</script>
+</body>
+</html>
