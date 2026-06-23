@@ -33,6 +33,14 @@
   .badge { background: #1e3320; border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 0.72rem; color: var(--muted); }
   .badge.live { border-color: var(--green); color: var(--green); }
 
+  /* TAB NAV */
+  .tab-nav { display: flex; border-bottom: 2px solid var(--border); background: #0d1810; }
+  .tab-btn { flex: 1; padding: 12px 8px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s, border-color 0.15s; }
+  .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
   /* LEADER CARD */
   .leader-card { background: linear-gradient(135deg, #1a2e1c, #1e3a20); border: 2px solid var(--gold); border-radius: 12px; margin: 14px; padding: 16px; display: flex; align-items: center; gap: 14px; }
   .leader-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.4rem; color: #0a120c; flex-shrink: 0; }
@@ -69,7 +77,7 @@
   .pts-val { font-size: 0.88rem; font-weight: 800; color: var(--text); text-align: right; width: 36px; flex-shrink: 0; }
   .div-separator { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 6px 4px 3px; }
 
-  /* PREDICTIONS */
+  /* PREDICTIONS / MATCH CARDS */
   .predictions { margin: 0 10px 10px; }
   .match-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
   .match-header { background: #1e3320; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -84,6 +92,16 @@
   .factor-tag { background: #1e3320; border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; font-size: 0.65rem; color: var(--muted); }
   .pts-est { background: #1a2e1c; border: 1px solid var(--gold); border-radius: 4px; padding: 2px 7px; font-size: 0.65rem; color: var(--gold); font-weight: 700; }
   .edge-box { margin: 0 12px 8px; background: #0d1e0f; border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 6px 10px; font-size: 0.72rem; color: #a0c8a4; line-height: 1.4; }
+
+  /* RESULT BADGES */
+  .result-badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 4px; padding: 2px 8px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+  .result-badge.exact    { background: #1a3a1c; border: 1px solid var(--gold);  color: var(--gold); }
+  .result-badge.winner   { background: #1a2e2a; border: 1px solid var(--teal);  color: var(--teal); }
+  .result-badge.diff     { background: #1c2420; border: 1px solid #60a8a0;      color: #60a8a0; }
+  .result-badge.loser    { background: #1e2820; border: 1px solid var(--muted); color: var(--muted); }
+  .result-badge.miss     { background: #2a1010; border: 1px solid var(--red);   color: var(--red); }
+  .actual-score { font-size: 0.75rem; color: var(--muted); margin: 2px 12px 6px; }
+  .actual-score strong { color: var(--text); }
 
   /* STATS ROW */
   .stats-row { display: flex; gap: 8px; margin: 0 10px 10px; }
@@ -104,6 +122,24 @@
   .weight-card .mult { font-size: 1.1rem; font-weight: 900; color: var(--muted); }
   .weight-card.final .mult { color: var(--gold); }
 
+  /* HISTORY ACCORDION */
+  .history-wrap { margin: 0 10px 10px; }
+  .hist-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; overflow: hidden; }
+  .hist-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .hist-header:hover { background: var(--card2); }
+  .hist-date { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+  .hist-meta { display: flex; align-items: center; gap: 8px; }
+  .hist-count { font-size: 0.7rem; color: var(--muted); }
+  .hist-arrow { font-size: 0.75rem; color: var(--muted); transition: transform 0.2s; }
+  .hist-arrow.open { transform: rotate(180deg); }
+  .hist-body { display: none; padding: 0 10px 10px; border-top: 1px solid var(--border); }
+  .hist-body.open { display: block; }
+  .hist-score-summary { display: flex; gap: 6px; flex-wrap: wrap; padding: 8px 0 4px; }
+
+  /* LOG SECTION */
+  .log-entry { background: var(--card2); border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 8px 12px; margin-bottom: 6px; font-size: 0.75rem; line-height: 1.5; color: var(--text); }
+  .log-entry .log-date { font-size: 0.65rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+
   /* UPDATE INFO */
   .update-bar { background: #1a2e1c; border-top: 1px solid var(--border); padding: 8px 14px; font-size: 0.68rem; color: var(--muted); text-align: center; }
   .update-bar span { color: var(--teal); }
@@ -111,11 +147,16 @@
   /* LOADING STATE */
   .loading { text-align: center; padding: 20px; color: var(--muted); font-size: 0.8rem; }
 
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 24px 16px; color: var(--muted); font-size: 0.8rem; line-height: 1.6; }
+  .empty-state .icon { font-size: 2rem; margin-bottom: 8px; }
+
   /* RESPONSIVE */
   @media (min-width: 480px) {
     .leader-card { margin: 14px auto; max-width: 480px; }
-    .standings, .predictions, .stats-row, .weight-row, .info-box { max-width: 480px; margin-left: auto; margin-right: auto; }
+    .standings, .predictions, .stats-row, .weight-row, .info-box, .history-wrap { max-width: 480px; margin-left: auto; margin-right: auto; }
     header { padding: 24px 16px 18px; }
+    .tab-nav { max-width: 480px; margin: 0 auto; }
   }
 </style>
 </head>
@@ -132,7 +173,7 @@
   </div>
 </header>
 
-<!-- LEADER CARD -->
+<!-- LEADER CARD (always visible) -->
 <div class="leader-card">
   <div class="leader-avatar">T</div>
   <div class="leader-info">
@@ -146,45 +187,74 @@
   </div>
 </div>
 
-<!-- STATS -->
-<div class="section-header"><div class="dot"></div><h2>Situação da Estratégia</h2></div>
-<div class="stats-row">
-  <div class="stat-card"><div class="stat-val">28</div><div class="stat-label">Vantagem (pts)</div></div>
-  <div class="stat-card"><div class="stat-val">#1</div><div class="stat-label">Posição</div></div>
-  <div class="stat-card"><div class="stat-val" id="days-left">—</div><div class="stat-label">Dias p/ Final</div></div>
+<!-- TAB NAVIGATION -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('hoje', this)">📅 Hoje</button>
+  <button class="tab-btn" onclick="switchTab('classificacao', this)">🏅 Classificação</button>
+  <button class="tab-btn" onclick="switchTab('historico', this)">📚 Histórico</button>
 </div>
 
-<!-- STANDINGS -->
-<div class="section-header"><div class="dot"></div><h2>Classificação Geral</h2></div>
-<div class="standings" id="standings-list">
-  <!-- populated by JS or static fallback below -->
-</div>
+<!-- ══════════════════ TAB: HOJE ══════════════════ -->
+<div id="tab-hoje" class="tab-pane active">
 
-<!-- PESO DOS JOGOS -->
-<div class="section-header"><div class="dot"></div><h2>Sistema de Peso</h2></div>
-<div class="weight-row">
-  <div class="weight-card"><div class="phase">Fase Grupos</div><div class="games">72 jogos</div><div class="mult">1×</div></div>
-  <div class="weight-card"><div class="phase">Mata-Mata</div><div class="games">31 jogos</div><div class="mult">1×</div></div>
-  <div class="weight-card final"><div class="phase">A Final</div><div class="games">1 jogo</div><div class="mult">2×</div></div>
-</div>
+  <!-- STATS -->
+  <div class="section-header"><div class="dot"></div><h2>Situação da Estratégia</h2></div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val">28</div><div class="stat-label">Vantagem (pts)</div></div>
+    <div class="stat-card"><div class="stat-val">#1</div><div class="stat-label">Posição</div></div>
+    <div class="stat-card"><div class="stat-val" id="days-left">—</div><div class="stat-label">Dias p/ Final</div></div>
+  </div>
 
-<!-- LATEST PREDICTIONS -->
-<div class="section-header"><div class="dot"></div><h2>Último Palpite Enviado</h2></div>
-<div class="predictions" id="predictions-list">
-  <div class="loading">Carregando palpites...</div>
-</div>
+  <!-- WEIGHT SYSTEM -->
+  <div class="section-header"><div class="dot"></div><h2>Sistema de Peso</h2></div>
+  <div class="weight-row">
+    <div class="weight-card"><div class="phase">Fase Grupos</div><div class="games">72 jogos</div><div class="mult">1×</div></div>
+    <div class="weight-card"><div class="phase">Mata-Mata</div><div class="games">31 jogos</div><div class="mult">1×</div></div>
+    <div class="weight-card final"><div class="phase">A Final</div><div class="games">1 jogo</div><div class="mult">2×</div></div>
+  </div>
 
-<!-- INFO -->
-<div class="info-box">
-  <strong style="color:var(--text)">Como funciona a estratégia?</strong><br>
-  Todos os dias, um motor de análise (Poisson + Dixon-Coles + odds de-vig bet365/Kalshi) gera os palpites otimizados para maximizar pontos no bolão. O foco é sempre no <em>placar exato</em> (+5 bônus) e na diferenciação do 2º colocado. A Final em 19 de Julho vale pontos em dobro.<br><br>
-  <a href="https://github.com/TGAHA-creator/bolao-copa-2026">Ver repositório e log</a>
-</div>
+  <!-- TODAY'S PREDICTIONS -->
+  <div class="section-header"><div class="dot"></div><h2>Palpites de Hoje</h2></div>
+  <div class="predictions" id="predictions-list">
+    <div class="loading">Carregando palpites...</div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="info-box">
+    <strong style="color:var(--text)">Como funciona a estratégia?</strong><br>
+    Todos os dias, um motor de análise (Poisson + Dixon-Coles + odds de-vig bet365/Kalshi) gera os palpites otimizados para maximizar pontos no bolão. O foco é sempre no <em>placar exato</em> (+5 bônus) e na diferenciação do 2º colocado. A Final em 19 de Julho vale pontos em dobro.<br><br>
+    <a href="https://github.com/TGAHA-creator/bolao-copa-2026">Ver repositório e log</a>
+  </div>
+
+</div><!-- /tab-hoje -->
+
+<!-- ══════════════════ TAB: CLASSIFICAÇÃO ══════════════════ -->
+<div id="tab-classificacao" class="tab-pane">
+
+  <div class="section-header"><div class="dot"></div><h2>Classificação Geral</h2></div>
+  <div class="standings" id="standings-list"></div>
+
+</div><!-- /tab-classificacao -->
+
+<!-- ══════════════════ TAB: HISTÓRICO ══════════════════ -->
+<div id="tab-historico" class="tab-pane">
+
+  <div class="section-header"><div class="dot"></div><h2>Histórico de Palpites</h2></div>
+  <div class="history-wrap" id="history-list">
+    <div class="loading">Carregando histórico...</div>
+  </div>
+
+  <div class="section-header" style="margin-top:4px"><div class="dot"></div><h2>Log de Resultados</h2></div>
+  <div class="history-wrap" id="log-section">
+    <div class="loading">Carregando log...</div>
+  </div>
+
+</div><!-- /tab-historico -->
 
 <div class="update-bar">Atualizado em <span id="last-update">—</span> · Dados: Marquinha Copa 2026</div>
 
 <script>
-// ── Static standings (updated from Marquinha app screenshots, 22 Jun 2026) ────
+// ── Static standings ──────────────────────────────────────────────────────────
 const STANDINGS = [
   { rank: 1,  name: "Tiago Assis",               pts: 169, you: true,  div: 1 },
   { rank: 2,  name: "Bruno Rosa",                 pts: 141, you: false, div: 1 },
@@ -202,6 +272,20 @@ const STANDINGS = [
 
 const maxPts = STANDINGS[0].pts;
 
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'historico' && !window._histLoaded) {
+    loadHistory();
+    loadLog();
+    window._histLoaded = true;
+  }
+}
+
+// ── Standings ─────────────────────────────────────────────────────────────────
 function rankColor(r) {
   if (r === 1) return 'gold';
   if (r === 2) return 'silver';
@@ -213,7 +297,6 @@ function buildStandings() {
   const el = document.getElementById('standings-list');
   let html = '';
   let lastDiv = 1;
-
   STANDINGS.forEach(p => {
     if (p.div === 2 && lastDiv === 1) {
       html += `<div class="div-separator">2ª Divisão</div>`;
@@ -232,31 +315,86 @@ function buildStandings() {
         <div class="pts-val">${p.pts}</div>
       </div>`;
   });
-
   el.innerHTML = html;
 }
 
-// ── Days until final (July 19 2026) ─────────────────────────────────────────
+// ── Days until final ──────────────────────────────────────────────────────────
 function updateDaysLeft() {
-  const final = new Date('2026-07-19T18:00:00Z'); // ~2PM ET kickoff
+  const final = new Date('2026-07-19T18:00:00Z');
   const now = new Date();
   const days = Math.max(0, Math.ceil((final - now) / 86400000));
   document.getElementById('days-left').textContent = days;
 }
 
-// ── Fetch latest predictions from repo ──────────────────────────────────────
+// ── Render a list of prediction objects into HTML ─────────────────────────────
+function renderPreds(preds) {
+  if (!Array.isArray(preds) || preds.length === 0) {
+    return '<div class="empty-state"><div class="icon">📭</div>Sem palpites registados para este dia.</div>';
+  }
+  let html = '';
+  preds.forEach(p => {
+    const score = p.score || '— - —';
+    const parts = score.split('-').map(s => s.trim());
+    const home = parts[0] || '—';
+    const away = parts[1] || '—';
+    const match = p.match || '';
+    const [teamA, teamB] = match.split(' vs ').map(s => (s || '').trim());
+    const factors = (p.key_factors || []).slice(0, 3).map(f => {
+      const txt = typeof f === 'string' ? f : (f.pt || f.en || '');
+      return txt ? `<span class="factor-tag">${txt}</span>` : '';
+    }).join('');
+    const edge = typeof p.edge === 'string' ? p.edge : (p.edge?.pt || p.edge?.en || '');
+    const est = p.est_total_pts ? `<span class="pts-est">~${Math.round(p.est_total_pts)} pts</span>` : '';
+    const venue = p.venue ? `· ${p.venue}` : '';
+    const group = typeof p.competition === 'object'
+      ? (p.competition.pt || p.competition.en || '')
+      : (p.competition || '');
+    const time = (p.kickoff_gst || '').slice(11, 16);
+
+    // Result grading (optional fields from graded predictions)
+    let resultHtml = '';
+    if (p.actual_score) {
+      const grade = p.grade || '';
+      const gradeClass = { exact: 'exact', winner: 'winner', diff: 'diff', loser: 'loser', miss: 'miss' }[grade] || '';
+      const gradeLabel = { exact: '✓ Placar Exato', winner: '✓ Vencedor', diff: '✓ Diferença', loser: '✓ Perdedor', miss: '✗ Errou' }[grade] || grade;
+      const ptsEarned = p.pts_earned != null ? ` · +${p.pts_earned} pts` : '';
+      resultHtml = `
+        <div class="actual-score">Resultado real: <strong>${p.actual_score}</strong></div>
+        ${gradeClass ? `<div class="match-footer"><span class="result-badge ${gradeClass}">${gradeLabel}${ptsEarned}</span></div>` : ''}`;
+    }
+
+    html += `
+      <div class="match-card">
+        <div class="match-header">
+          <span class="match-group">${group}</span>
+          <span class="match-time">${time ? time + ' Dubai ' : ''}${venue}</span>
+        </div>
+        <div class="match-teams">
+          <div class="team-name">${teamA || '—'}</div>
+          <div class="score-box">
+            <div class="score-val">${home} – ${away}</div>
+            <div class="score-label">palpite</div>
+          </div>
+          <div class="team-name" style="text-align:right">${teamB || '—'}</div>
+        </div>
+        ${resultHtml}
+        ${edge ? `<div class="edge-box">↳ ${edge}</div>` : ''}
+        <div class="match-footer">${factors}${est}</div>
+      </div>`;
+  });
+  return html;
+}
+
+// ── Load today's predictions ──────────────────────────────────────────────────
 async function loadPredictions() {
   const BASE = 'https://raw.githubusercontent.com/TGAHA-creator/bolao-copa-2026/main/predictions/';
   const el = document.getElementById('predictions-list');
-
-  // Try the last few dates
   const dates = [];
   for (let i = 0; i <= 5; i++) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     dates.push(d.toISOString().slice(0, 10));
   }
-
   let loaded = false;
   for (const date of dates) {
     try {
@@ -264,52 +402,181 @@ async function loadPredictions() {
       if (!r.ok) continue;
       const preds = await r.json();
       if (!Array.isArray(preds) || preds.length === 0) continue;
-
-      let html = '';
-      preds.forEach(p => {
-        const score = p.score || '— - —';
-        const [home, away] = score.split('-').map(s => s.trim());
-        const match = p.match || '';
-        const [teamA, teamB] = match.split(' vs ').map(s => (s || '').trim());
-        const factors = (p.key_factors || []).slice(0, 3).map(f => {
-          const txt = typeof f === 'string' ? f : (f.pt || f.en || '');
-          return `<span class="factor-tag">${txt}</span>`;
-        }).join('');
-        const edge = typeof (p.edge) === 'string' ? p.edge : (p.edge?.pt || p.edge?.en || '');
-        const est = p.est_total_pts ? `<span class="pts-est">~${Math.round(p.est_total_pts)} pts</span>` : '';
-        const venue = p.venue ? `· ${p.venue}` : '';
-        const group = (typeof p.competition === 'object' ? (p.competition.pt || p.competition.en || '') : (p.competition || ''));
-
-        html += `
-          <div class="match-card">
-            <div class="match-header">
-              <span class="match-group">${group}</span>
-              <span class="match-time">${(p.kickoff_gst || '').slice(11, 16)} Dubai ${venue}</span>
-            </div>
-            <div class="match-teams">
-              <div class="team-name">${teamA || '—'}</div>
-              <div class="score-box">
-                <div class="score-val">${home || '—'} – ${away || '—'}</div>
-                <div class="score-label">palpite</div>
-              </div>
-              <div class="team-name" style="text-align:right">${teamB || '—'}</div>
-            </div>
-            ${edge ? `<div class="edge-box">↳ ${edge}</div>` : ''}
-            <div class="match-footer">${factors}${est}</div>
-          </div>`;
-      });
-
-      el.innerHTML = `<div style="font-size:0.7rem;color:var(--muted);padding:0 4px 6px">Palpites para ${date}</div>` + html;
-      document.getElementById('last-update').textContent = date + ' (palpites)';
+      el.innerHTML = `<div style="font-size:0.7rem;color:var(--muted);padding:0 4px 6px">Palpites para ${fmtDate(date)}</div>` + renderPreds(preds);
+      document.getElementById('last-update').textContent = fmtDate(date) + ' (palpites)';
       loaded = true;
       break;
     } catch(e) { /* try next */ }
   }
-
   if (!loaded) {
     el.innerHTML = `<div class="info-box">Palpites do dia aparecerão aqui depois do envio diário (9:08h Dubai). Verifique amanhã!</div>`;
     document.getElementById('last-update').textContent = '22 Jun 2026 (classificação)';
   }
+}
+
+// ── Load prediction history ───────────────────────────────────────────────────
+async function loadHistory() {
+  const el = document.getElementById('history-list');
+  try {
+    const r = await fetch('https://api.github.com/repos/TGAHA-creator/bolao-copa-2026/contents/predictions');
+    if (!r.ok) throw new Error('no dir');
+    const files = await r.json();
+    if (!Array.isArray(files) || files.length === 0) throw new Error('empty');
+
+    const today = new Date().toISOString().slice(0, 10);
+    const jsonFiles = files
+      .filter(f => f.name.endsWith('.json'))
+      .sort((a, b) => b.name.localeCompare(a.name)); // newest first
+
+    if (jsonFiles.length === 0) throw new Error('no json');
+
+    let html = '';
+    jsonFiles.forEach(f => {
+      const date = f.name.replace('.json', '');
+      const isPast = date < today;
+      const isFuture = date > today;
+      const tag = isPast ? '' : (isFuture ? ' 🔮' : ' • hoje');
+      html += `
+        <div class="hist-item" id="hist-${date}">
+          <div class="hist-header" onclick="toggleHist('${date}', '${f.download_url}')">
+            <div>
+              <span class="hist-date">${fmtDate(date)}${tag}</span>
+            </div>
+            <div class="hist-meta">
+              <span class="hist-count" id="hcount-${date}">—</span>
+              <span class="hist-arrow" id="harrow-${date}">▼</span>
+            </div>
+          </div>
+          <div class="hist-body" id="hbody-${date}">
+            <div class="loading" style="padding:12px">Carregando...</div>
+          </div>
+        </div>`;
+    });
+
+    el.innerHTML = html;
+
+    // Eagerly load counts (match count per day)
+    jsonFiles.forEach(f => {
+      const date = f.name.replace('.json', '');
+      fetch(f.download_url)
+        .then(r => r.json())
+        .then(preds => {
+          const n = Array.isArray(preds) ? preds.length : 0;
+          const el = document.getElementById(`hcount-${date}`);
+          if (el) el.textContent = n + (n === 1 ? ' jogo' : ' jogos');
+        })
+        .catch(() => {});
+    });
+
+  } catch(e) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📂</div>
+        O histórico de palpites aparecerá aqui conforme o motor diário for executado.
+        <br><br>
+        <a href="https://github.com/TGAHA-creator/bolao-copa-2026/tree/main/predictions" style="color:var(--teal)">Ver pasta de palpites no GitHub</a>
+      </div>`;
+  }
+}
+
+// ── Toggle a history accordion item ──────────────────────────────────────────
+const _histCache = {};
+async function toggleHist(date, url) {
+  const body = document.getElementById(`hbody-${date}`);
+  const arrow = document.getElementById(`harrow-${date}`);
+  const isOpen = body.classList.contains('open');
+  if (isOpen) {
+    body.classList.remove('open');
+    arrow.classList.remove('open');
+    return;
+  }
+  body.classList.add('open');
+  arrow.classList.add('open');
+  if (_histCache[date]) {
+    body.innerHTML = _histCache[date];
+    return;
+  }
+  try {
+    const rawUrl = `https://raw.githubusercontent.com/TGAHA-creator/bolao-copa-2026/main/predictions/${date}.json`;
+    const r = await fetch(rawUrl);
+    const preds = await r.json();
+    const html = renderPreds(preds);
+    _histCache[date] = html;
+    body.innerHTML = html;
+  } catch(e) {
+    body.innerHTML = '<div class="info-box">Erro ao carregar palpites.</div>';
+  }
+}
+
+// ── Load log.md ───────────────────────────────────────────────────────────────
+async function loadLog() {
+  const el = document.getElementById('log-section');
+  try {
+    const r = await fetch('https://raw.githubusercontent.com/TGAHA-creator/bolao-copa-2026/main/log.md');
+    if (!r.ok) throw new Error('no log');
+    const text = await r.text();
+
+    // Strip header and look for graded match entries
+    const lines = text.split('\n');
+    const entries = [];
+    let current = null;
+
+    lines.forEach(line => {
+      // Match headings like "## 2026-06-23" or "### Jogo:" patterns
+      const dateMatch = line.match(/^#+\s*(\d{4}-\d{2}-\d{2})/);
+      if (dateMatch) {
+        if (current) entries.push(current);
+        current = { date: dateMatch[1], lines: [] };
+        return;
+      }
+      if (current) {
+        const trimmed = line.trim();
+        if (trimmed) current.lines.push(trimmed);
+      }
+    });
+    if (current && current.lines.length > 0) entries.push(current);
+
+    if (entries.length === 0) {
+      // Show raw log content if no structured entries found
+      const clean = text
+        .replace(/^#[^\n]*/gm, '') // remove H1
+        .replace(/\(nenhuma ainda[^)]*\)/g, '')
+        .trim();
+
+      if (clean.length < 30) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">📝</div>O log de resultados será preenchido automaticamente conforme os jogos forem disputados.</div>`;
+      } else {
+        el.innerHTML = `<div class="log-entry"><div class="log-date">log.md</div><pre style="white-space:pre-wrap;font-size:0.72rem;color:var(--muted)">${escHtml(clean.slice(0, 2000))}</pre></div>`;
+      }
+      return;
+    }
+
+    // Render structured entries newest-first
+    entries.sort((a, b) => b.date.localeCompare(a.date));
+    let html = '';
+    entries.forEach(e => {
+      html += `
+        <div class="log-entry">
+          <div class="log-date">${fmtDate(e.date)}</div>
+          ${e.lines.map(l => `<div>${escHtml(l)}</div>`).join('')}
+        </div>`;
+    });
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">📝</div>O log de resultados será preenchido automaticamente conforme os jogos forem disputados.</div>`;
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmtDate(dateStr) {
+  if (!dateStr) return dateStr;
+  const [y, m, d] = dateStr.split('-');
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}`;
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
