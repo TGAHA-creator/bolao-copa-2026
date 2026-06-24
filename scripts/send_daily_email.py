@@ -23,6 +23,8 @@ Optional (defaults shown):
   ROUTINE_FILE=bolao-copa-2026-routine.md   DATA_DIR=data
   PREDICTIONS_DIR=predictions               LOG_FILE=log.md
   WEB_SEARCH_MAX_USES=15
+  MAX_PRED_FILES=7        - how many recent prediction files to load (keeps prompt under rate limit)
+  MAX_LOG_CHARS=4000      - max chars from log.md to load (keeps prompt under rate limit)
 Dashboard ingest (optional - skipped if unset):
   INGEST_URL          - e.g. https://your-app.vercel.app/api/ingest
   INGEST_SECRET       - the dashboard's INGEST_SECRET (sent as Authorization: Bearer)
@@ -58,7 +60,14 @@ def env(name, default=None, required=False):
 
 
 def load_context():
-    """Routine spec + data files + existing log.md + all prior predictions (for grading)."""
+    """Routine spec + data files + existing log.md + recent prior predictions (for grading).
+
+    To stay within the Anthropic 30 000 input-token/minute rate limit we cap:
+      * prediction files: MAX_PRED_FILES most-recent files only (default 7)
+      * log.md: MAX_LOG_CHARS characters from the end of the file (default 4 000)
+    Older predictions are already summarised in log.md's LESSONS section, so no
+    information is lost for grading purposes.
+    """
     parts = []
 
     routine_file = Path(env("ROUTINE_FILE", "bolao-copa-2026-routine.md"))
@@ -75,19 +84,36 @@ def load_context():
 
     log_file = Path(env("LOG_FILE", "log.md"))
     if log_file.exists():
-        parts.append(f"# Current {log_file.name} (history + LESSONS)\n\n" + log_file.read_text(encoding="utf-8"))
+        log_content = log_file.read_text(encoding="utf-8")
+        # Cap log at MAX_LOG_CHARS to stay within API rate limits.
+        # LESSONS are always at the top of log.md and are preserved because we take the tail.
+        # The tail contains the most recent graded matches, which is what matters for grading today.
+        max_log_chars = int(env("MAX_LOG_CHARS", "4000"))
+        if len(log_content) > max_log_chars:
+            log_content = ("...[older entries omitted to stay within API rate limits — "
+                           "see full log.md in the repo]\n\n" + log_content[-max_log_chars:])
+        parts.append(f"# Current {log_file.name} (history + LESSONS)\n\n" + log_content)
     else:
         parts.append(f"# Current {log_file.name}\n\n(empty - no history yet; nothing to grade on the first run)")
 
     pred_dir = Path(env("PREDICTIONS_DIR", "predictions"))
     if pred_dir.is_dir():
-        preds = sorted(pred_dir.glob("*.json"))
+        all_preds = sorted(pred_dir.glob("*.json"))
+        # Only load the N most recent files to keep the prompt within the 30K token/min rate limit.
+        # Older predictions are already digested into log.md's LESSONS section.
+        max_files = int(env("MAX_PRED_FILES", "7"))
+        preds = all_preds[-max_files:]
+        skipped = len(all_preds) - len(preds)
         if preds:
             blob = []
             for f in preds:
                 blob.append(f"## {f.name}\n```json\n{f.read_text(encoding='utf-8')}\n```")
-            parts.append("# Prior predictions (grade any whose matches have been played and are not yet in log.md)\n\n"
-                         + "\n\n".join(blob))
+            header = (
+                f"# Prior predictions — last {len(preds)} of {len(all_preds)} files"
+                + (f" ({skipped} older files omitted; already in log.md LESSONS)" if skipped else "")
+                + "\n(grade any whose matches have been played and are not yet in log.md)\n\n"
+            )
+            parts.append(header + "\n\n".join(blob))
 
     return "\n\n---\n\n".join(parts)
 
