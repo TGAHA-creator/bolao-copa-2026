@@ -1,0 +1,77 @@
+[
+  {
+    "match": "Espanha vs Áustria",
+    "competition": {
+      "pt": "Oitavas de Final (Round of 32)",
+      "en": "Round of 32"
+    },
+    "kickoff_gst": "2026-07-02 23:00",
+    "venue": "SoFi Stadium, Inglewood, Los Angeles, EUA",
+    "outcome": "Empate",
+    "score": "1-1",
+    "p_model": {
+      "A": 0.724,
+      "draw": 0.183,
+      "B": 0.093
+    },
+    "p_consensus": {
+      "A": 0.76,
+      "draw": 0.17,
+      "B": 0.07
+    },
+    "xg": {
+      "A": 2.1,
+      "B": 0.6
+    },
+    "base_pts": 8,
+    "est_total_pts": 12,
+    "alt_scores": [
+      {
+        "score": "2-0",
+        "prob": 0.148
+      },
+      {
+        "score": "1-0",
+        "prob": 0.141
+      },
+      {
+        "score": "0-0",
+        "prob": 0.067
+      }
+    ],
+    "key_factors": [
+      {
+        "pt": "Espanha invicta no grupo com 5GF e 0GA — defesa mais sólida do torneio",
+        "en": "Spain unbeaten in group with 5 GF and 0 GA — tightest defence in the tournament"
+      },
+      {
+        "pt": "Áustria sem clean sheet em 12 jogos consecutivos de Copa do Mundo",
+        "en": "Austria without a clean sheet in 12 consecutive World Cup matches"
+      },
+      {
+        "pt": "Lamine Yamal apto e em evolução; marcou contra a Arábia Saudita, esperado para jogo completo",
+        "en": "Lamine Yamal fit and improving; scored vs Saudi Arabia, expected full 90 minutes"
+      },
+      {
+        "pt": "Rangnick usa pressão alta que pode criar transições perigosas; Arnautović goleou vs Jordânia",
+        "en": "Rangnick's high press can create dangerous transitions; Arnautovic scored vs Jordan"
+      },
+      {
+        "pt": "Calor de julho em Los Angeles pode prejudicar o ritmo intenso austríaco no segundo tempo",
+        "en": "July heat in Los Angeles may blunt Austria's high-intensity pressing in the second half"
+      }
+    ],
+    "edge": {
+      "pt": "Modelo projeta 18,3% para empate contra 17,0% do consenso — leve vantagem. Com 8 pontos-base para empate, o valor esperado calculado (1,46) supera marginalmente o da vitória espanhola (1,44 com base 2). A matemática do bolão favorece o risco calculado do empate nessa faixa de cotação.",
+      "en": "Model projects 18.3% for draw vs 17.0% consensus — slight edge. With 8 base points for the draw, the calculated expected value (1.46) marginally beats the Spain-win EV (1.44 at base 2). The pool scoring system rewards the calculated draw risk at this probability range."
+    },
+    "reading": {
+      "pt": "A Espanha deve vencer, mas o bolão não premia proporcionalmente vitórias de favoritos pesados. Com apenas 2 pontos-base para a vitória espanhola, apostar no empate — que tem 18% de chance e paga 8 pontos-base — gera o maior retorno esperado. Se a Áustria de Rangnick conseguir marcar (como fez em todos os jogos do grupo), um 1-1 é totalmente plausível.",
+      "en": "Spain should win, but the pool does not proportionally reward heavy-favourite victories. With only 2 base points for a Spain win, picking the draw — which has 18% probability and pays 8 base points — generates the highest expected return. If Rangnick's Austria can score (as they did in every group game), a 1-1 is entirely plausible."
+    },
+    "notes": {
+      "pt": "Atenção: sendo oitavas de final, empate em 90 min implica prorrogação (+3 pts) e possivelmente pênaltis (+3 pts) — se o palpite de empate estiver correto, o potencial total sobe para 8+5+2+3+3 = 21 pts em caso de 1-1 que vai a pênaltis. Probabilidade de empate em 90 min estimada em 18,3% pelo modelo.",
+      "en": "Note: being a knockout round, a 90-min draw leads to extra time (+3 pts) and potentially penalties (+3 pts) — if the draw pick is correct, total potential rises to 8+5+2+3+3 = 21 pts in a 1-1 that goes to penalties. 90-min draw probability estimated at 18.3% by model."
+    }
+  }
+]
