@@ -1,0 +1,77 @@
+[
+  {
+    "match": "Austrália vs Egito",
+    "competition": {
+      "pt": "Oitavas de Final (Copa do Mundo 2026)",
+      "en": "Round of 32 (FIFA World Cup 2026)"
+    },
+    "kickoff_gst": "2026-07-03 22:00",
+    "venue": "AT&T Stadium, Arlington, Texas, EUA",
+    "outcome": "A",
+    "score": "1-0",
+    "p_model": {
+      "A": 0.309,
+      "draw": 0.303,
+      "B": 0.388
+    },
+    "p_consensus": {
+      "A": 0.287,
+      "draw": 0.331,
+      "B": 0.382
+    },
+    "xg": {
+      "A": 0.95,
+      "B": 1.1
+    },
+    "base_pts": 6,
+    "est_total_pts": 17,
+    "alt_scores": [
+      {
+        "score": "0-1",
+        "prob": 0.142
+      },
+      {
+        "score": "1-1",
+        "prob": 0.135
+      },
+      {
+        "score": "0-0",
+        "prob": 0.129
+      }
+    ],
+    "key_factors": [
+      {
+        "pt": "Mohamed Salah com distensão muscular — voltou ao treino mas participação no jogo é incerta; carga ofensiva recai sobre Omar Marmoush",
+        "en": "Mohamed Salah carrying a hamstring strain — returned to training but match fitness uncertain; creative burden shifts to Omar Marmoush"
+      },
+      {
+        "pt": "Leckie e Italiano definitivamente fora da Copa; Irankunda (gol vs Turquia) e Volpato são as referências ofensivas australianas",
+        "en": "Leckie and Italiano ruled out of the tournament; Irankunda (goal vs Turkey) and Volpato are Australia's attacking references"
+      },
+      {
+        "pt": "Egito sofreu gol em todos os três jogos do grupo (1 GA vs Bélgica, 1 GA vs Nova Zelândia, 1 GA vs Irã) — defesa vulnerável",
+        "en": "Egypt conceded in all three group games (vs Belgium, New Zealand, Iran) — defensive vulnerability exposed"
+      },
+      {
+        "pt": "Formato eliminatório favorece jogos fechados (L04) — vantagem para a estratégia defensiva e contra-ataques australianos",
+        "en": "Knockout format favours tight games (L04) — advantage for Australia's defensive setup and counter-attacks"
+      },
+      {
+        "pt": "Austrália com 4 dias de descanso após o jogo vs Paraguai (25/jun); Egito também com folga similar após o jogo vs Irã (26/jun)",
+        "en": "Australia had 4 days rest since Paraguay (Jun 25); Egypt also had similar rest after Iran draw (Jun 26)"
+      }
+    ],
+    "edge": {
+      "pt": "Modelo projeta 30,9% para a Austrália contra 28,7% do consenso — vantagem de +2,2%. Com base de 6 pontos para o azarão australiano, o VE calculado (1,86) supera o do Egito (1,55) e do empate (1,51). A incerteza em torno de Salah cria uma ineficiência de mercado que o modelo captura.",
+      "en": "Model projects 30.9% for Australia vs 28.7% consensus — +2.2% edge. With 6 base points for the Australian underdog, the calculated EV (1.86) beats Egypt (1.55) and draw (1.51). Salah's fitness uncertainty creates a market inefficiency the model captures."
+    },
+    "reading": {
+      "pt": "O Egito é o leve favorito nas cotações, mas uma vitória australiana é totalmente plausível: Salah está lesionado, a defesa egípcia foi vazada nas três partidas do grupo e os Socceroos têm um contra-atacante de qualidade em Irankunda. Em um jogo de oitavas tipicamente fechado, um gol no contra-ataque pode ser suficiente para classificar a Austrália.",
+      "en": "Egypt is the slight market favourite, but an Australian win is entirely plausible: Salah is injured, Egypt's defence was breached in all three group games, and the Socceroos have a quality counter-attacker in Irankunda. In a typically tight knockout game, one counter-attack goal could be enough to send Australia through."
+    },
+    "notes": {
+      "pt": "Atenção: sendo oitavas de final, empate em 90 min implica prorrogação (+3 pts) e possivelmente pênaltis (+3 pts). Nosso palpite é pela vitória australiana em 90 min, então esses bônus não se aplicam ao cenário previsto. Se o jogo terminar em empate, pontuamos 0.",
+      "en": "Note: being a knockout match, a 90-min draw leads to extra time (+3 pts) and potentially penalties (+3 pts). Our pick is an Australian win in 90 min, so those bonuses do not apply to the predicted scenario. If the game ends in a draw, we score 0."
+    }
+  }
+]
