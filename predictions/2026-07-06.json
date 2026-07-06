@@ -1,0 +1,77 @@
+[
+  {
+    "match": "Argentina vs Egito",
+    "competition": {
+      "pt": "Oitavas de Final (Copa do Mundo 2026)",
+      "en": "Round of 16 (FIFA World Cup 2026)"
+    },
+    "kickoff_gst": "2026-07-07 20:00",
+    "venue": "Mercedes-Benz Stadium, Atlanta, Georgia, EUA",
+    "outcome": "A",
+    "score": "2-0",
+    "p_model": {
+      "A": 0.735,
+      "draw": 0.175,
+      "B": 0.09
+    },
+    "p_consensus": {
+      "A": 0.699,
+      "draw": 0.202,
+      "B": 0.099
+    },
+    "xg": {
+      "A": 2.2,
+      "B": 0.8
+    },
+    "base_pts": 2,
+    "est_total_pts": 4,
+    "alt_scores": [
+      {
+        "score": "1-0",
+        "prob": 0.112
+      },
+      {
+        "score": "2-1",
+        "prob": 0.099
+      },
+      {
+        "score": "3-0",
+        "prob": 0.091
+      }
+    ],
+    "key_factors": [
+      {
+        "pt": "Messi em forma histórica: 7 gols em 4 jogos, artilheiro all-time da Copa do Mundo (20 gols), gol e assistência vs Cabo Verde",
+        "en": "Messi in historic form: 7 goals in 4 games, all-time World Cup top scorer (20 goals), goal and assist vs Cape Verde"
+      },
+      {
+        "pt": "Egito sem lateral-esquerdo titular Ahmed Fattouh (rasgamento muscular confirmado) — flanco esquerdo vulnerável a explorações",
+        "en": "Egypt missing starting left-back Ahmed Fattouh (confirmed hamstring tear) — left flank exposed to exploitation"
+      },
+      {
+        "pt": "Salah ficou abaixo do esperado vs Austrália (120 minutos jogados, chances desperdiçadas) — dificilmente estará em plena forma física",
+        "en": "Salah was below par vs Australia (120 minutes played, wasted chances) — unlikely to be at full physical capacity"
+      },
+      {
+        "pt": "Argentina precisou de prorrogação vs Cabo Verde (3-2) — sinal de vulnerabilidade defensiva, mas qualidade ofensiva superior permanece intacta",
+        "en": "Argentina needed extra time vs Cape Verde (3-2) — sign of defensive vulnerability, but offensive superiority remains intact"
+      },
+      {
+        "pt": "L06: VE de Argentina (1,47) supera Empate (1,40) por margem pequena mas positiva; L08 indica cautela mas não apagam a vantagem qualitativa clara",
+        "en": "L06: Argentina's EV (1.47) beats Draw (1.40) by a slim but positive margin; L08 advises caution but doesn't override the clear quality gap"
+      }
+    ],
+    "edge": {
+      "pt": "Modelo projeta 73,5% para Argentina contra 69,9% do consenso — +3,6% de vantagem. Com base de 2 pts para o favorito, o VE calculado (1,47) supera marginalmente o do empate (1,40 com base 8). Após L06 (não apostar em azarão com VE margin <0,05), confirmamos a Argentina. A ausência de Fattouh e o desgaste de Salah criam uma ineficiência que o modelo captura.",
+      "en": "Model projects 73.5% for Argentina vs 69.9% consensus — +3.6% edge. With base 2 pts for the favourite, the calculated EV (1.47) marginally beats the draw (1.40 at base 8). After L06 (don't back underdog with EV margin <0.05), Argentina is confirmed. Fattouh's absence and Salah's fatigue create a market inefficiency the model captures."
+    },
+    "reading": {
+      "pt": "Argentina é a escolha certa tanto pela qualidade como pela matemática do bolão. Messi está no melhor momento do torneio, o Egito chega mais desgastado (120 min vs Austrália) e com desfalques defensivos. Um 2-0 limpo reflete o cenário mais provável: Argentina controla o jogo desde cedo, Messi ou Álvarez marca na primeira metade, e o Egito — sem Fattouh na esquerda — não consegue criar as transições que precisaria para surpreender.",
+      "en": "Argentina is the right pick on both quality and pool-math grounds. Messi is in the tournament's best form, Egypt arrive more fatigued (120 min vs Australia) and with defensive absentees. A clean 2-0 reflects the most likely scenario: Argentina controls early, Messi or Álvarez scores in the first half, and Egypt — without Fattouh on the left — cannot generate the counter-attacks they would need to spring a surprise."
+    },
+    "notes": {
+      "pt": "Sendo oitavas de final, empate em 90 min implica prorrogação (+3 pts) e possivelmente pênaltis (+3 pts). Nosso palpite é pela vitória argentina em 90 min, portanto esses bônus não se aplicam ao cenário previsto. Se houver prorrogação/pênaltis, pontuamos 0 com este palpite.",
+      "en": "Being a knockout match, a 90-min draw leads to extra time (+3 pts) and potentially penalties (+3 pts). Our pick is an Argentine win in 90 min, so those bonuses do not apply to the predicted scenario. If extra time/penalties occur, we score 0 with this pick."
+    }
+  }
+]
