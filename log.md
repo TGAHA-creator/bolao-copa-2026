@@ -27,3 +27,6 @@
 - **Campeã:** Espanha 1-0 Argentina (prorrogação) — MetLife Stadium, 19/07/2026.
 - **Pontuação total da temporada:** 2 pts | Resultados corretos: 1 de 3 | Placares exatos: 0 de 3.
 - Nenhum jogo previsto após esta data — torneio encerrado.
+
+### 2026-09-22 (verificação de janela)
+- **Janela 2026-09-23:** Nenhum jogo na janela. A Copa do Mundo 2026 encerrou-se em 19/07/2026. Torneio concluído. Nenhuma previsão gerada.
