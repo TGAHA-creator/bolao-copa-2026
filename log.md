@@ -1,9 +1,9 @@
-# Bolão Copa 2026 — Log
+# Copa 2026 — Log
 
 ## LESSONS (rolling, máx. 10)
 - L01: Em oitavas de final com favorito pesado (~76%), o VE do empate (base 8 pts × 18%) supera marginalmente o VE da vitória favorita (base 2 pts × 72%) — apostar no empate é matematicamente ótimo nessa faixa de probabilidade. **[REVISADO por L06: margem muito pequena; favorito preferível]**
 - L02: Espanha manteve zero gols sofridos em toda a fase de grupos — sua defesa é a referência do torneio; projetar xG da Áustria com cautela (máx 0.6–0.8).
-- L03: Áústria não conseguiu clean sheet em 12 jogos seguidos de Copa — mesmo contra a Espanha, algum gol austríaco deve ser considerado possível. **[Áustria ficou em 0 gols — L03 refutada vs Espanha; L02 confirmada]**
+- L03: Áustria não conseguiu clean sheet em 12 jogos seguidos de Copa — mesmo contra a Espanha, algum gol austríaco deve ser considerado possível. **[Áustria ficou em 0 gols — L03 refutada vs Espanha; L02 confirmada]**
 - L04: O modelo Poisson base não considera variâncias de knockout (pressão, margem de segurança, gestão de placares) — jogos eliminatórios tendem a ser mais fechados que a média da fase de grupos sugere. **[REVISADO por L09: Argentina–Egito mostrou o oposto — virada caótica de 3-2; jogos eliminatórios podem ser explosivos]**
 - L05: Quando o favorito tem lesão no jogador-chave (ex. Salah com distensão muscular), reduzir o xG ofensivo em 10–20% e reavaliar o VE do azarão — base points mais altos do azarão podem inverter o pick ótimo mesmo com diferença de ranking modesta.
 - L06: Margem de VE inferior a 0,05 unidades não justifica apostar no azarão — defaultar para o favorito. (Aprendizado: Espanha vs Áustria, VE draw=1,46 vs VE win=1,44 → apostamos no empate → Espanha venceu 3-0.)
@@ -30,3 +30,6 @@
 
 ### 2026-09-22 (verificação de janela)
 - **Janela 2026-09-23:** Nenhum jogo na janela. A Copa do Mundo 2026 encerrou-se em 19/07/2026. Torneio concluído. Nenhuma previsão gerada.
+
+### 2026-09-23 (verificação de janela)
+- **Janela 2026-09-24:** Nenhum jogo na janela. A Copa do Mundo 2026 encerrou-se em 19/07/2026. Torneio concluído. Nenhuma previsão gerada.
