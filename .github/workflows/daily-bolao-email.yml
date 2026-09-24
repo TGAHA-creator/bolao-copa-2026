@@ -1,64 +1,13 @@
-name: Daily Bolao Copa 2026 Email
+name: Daily Bolao Copa 2026 Email (disabled)
 
+# This automation has been intentionally disabled to stop all routine activity.
+# The scheduled daily email trigger was removed.
 on:
-  schedule:
-    # GitHub cron runs in UTC. 09:05 Asia/Dubai (UTC+4) = 05:05 UTC.
-    - cron: "5 5 * * *"   # 09:05 Asia/Dubai (UTC+4)
-  workflow_dispatch:        # lets you trigger a test run manually from the Actions tab
-    inputs:
-      window_hours:
-        description: "Optional preview override: hours ahead to scope matches. Leave blank for normal mode (predict tomorrow's matches)."
-        required: false
-        default: ""
-
-# Avoid overlapping runs if a previous one is still going.
-concurrency:
-  group: daily-bolao-email
-  cancel-in-progress: false
-
-# Needed so the persistence step can push commits (predictions, log, keepalive).
-permissions:
-  contents: write
+  workflow_dispatch:
 
 jobs:
-  send:
+  disabled:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Generate and send the daily email
-        env:
-          # Secrets are stored under custom names in this repo; map them to what the script expects.
-          ANTHROPIC_API_KEY: ${{ secrets.SECRET_BOLAO }}
-          SMTP_USER: ${{ secrets.SECRET_BOLAO_EMAIL }}
-          SMTP_PASS: ${{ secrets.SECRET_BOLAO_EMAIL_PW }}
-          # Config (repo Variables, with sane defaults). NOTE: correct recipient spelling.
-          SMTP_HOST: ${{ vars.SMTP_HOST || 'smtp.gmail.com' }}
-          SMTP_PORT: ${{ vars.SMTP_PORT || '465' }}
-          EMAIL_TO: ${{ vars.EMAIL_TO || 'tiagogsa@yahoo.com.br' }}
-          EMAIL_FROM: ${{ vars.EMAIL_FROM }}
-          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-6' }}
-          # Blank = normal mode (predict tomorrow's Asia/Dubai matches). Set a number via manual dispatch to preview an N-hour window.
-          WINDOW_HOURS: ${{ inputs.window_hours || vars.WINDOW_HOURS || '' }}
-          # Dashboard ingest — POST the daily analysis to the Bolão Dashboard (skipped if either is unset).
-          INGEST_URL: ${{ vars.INGEST_URL }}
-          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
-        run: python scripts/send_daily_email.py
-
-      - name: Persist predictions + log, and keepalive (dodges 60-day cron auto-disable)
-        if: always()
-        run: |
-          mkdir -p .github
-          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/last-run.txt
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A predictions log.md .github/last-run.txt 2>/dev/null || true
-          git add .github/last-run.txt
-          git commit -m "chore: daily picks + log + keepalive [skip ci]" || { echo "nothing to commit"; exit 0; }
-          git push
+      - name: Disabled notification
+        run: echo "The bolao-copa-2026 automation has been disabled and no routine jobs remain active."
